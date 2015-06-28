@@ -4,23 +4,23 @@ package org.horrgs.chat.server.types;
  * Created by Horrgs on 6/18/2015.
  */
 public enum RequestType {
-    CREATE_ACCOUNT("create_account"),
-    LOGIN("login"),
-    ERROR("error"),
-    SEND_MESSAGE("send_message");
-    private String type;
+    CREATE_ACCOUNT("CREATE_ACCOUNT"),
+    LOGIN("LOGIN"),
+    ERROR("ERROR"),
+    SEND_MESSAGE("SEND_MESSAGE");
+    private String name;
 
-    private RequestType(String type) {
-        this.type = type;
+    private RequestType(String name) {
+        this.name = name;
     }
 
-    public String getType() {
-        return type;
+    public String getName() {
+        return name;
     }
 
-    public RequestType getByType(String type) {
+    public RequestType getByName(String name) {
         for(RequestType requestTypes : RequestType.values()) {
-            if(requestTypes.getType().equals(type)) {
+            if(requestTypes.getName().equals(name)) {
                 return requestTypes;
             }
         }
