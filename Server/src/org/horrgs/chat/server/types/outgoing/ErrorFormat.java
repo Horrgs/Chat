@@ -17,13 +17,6 @@ public class ErrorFormat {
         this.message = message;
     }
 
-    public ErrorFormat(String requestType, String message) {
-        RequestType requestType1 = RequestType.CREATE_ACCOUNT;
-        requestType1 = requestType1.getByType(requestType);
-        this.requestType = requestType1;
-        this.message = message;
-    }
-
     public RequestType getRequestType() {
         return requestType;
     }

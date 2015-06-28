@@ -16,14 +16,6 @@ public class LoginFormat {
         this.password = password;
     }
     
-    public LoginFormat(String requestType, String username, String password) {
-        RequestType requestType1 = RequestType.CREATE_ACCOUNT;
-        requestType1 = requestType1.getByType(requestType);
-        this.requestType = requestType1;
-        this.username = username;
-        this.password = password;
-    }
-    
     public RequestType getRequestType() {
         return requestType;
     }
