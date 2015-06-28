@@ -1,5 +1,9 @@
 package org.horrgs.chat.client.windows;
 
+import org.horrgs.chat.client.ClientSocket;
+import org.horrgs.chat.client.types.RequestType;
+import org.horrgs.chat.client.types.incoming.CreateAccountFormat;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -10,23 +14,37 @@ import java.awt.event.ActionListener;
  */
 public class CreateAccount extends JFrame {
     //TODO: email.
-    private JTextField hintUsername,hintPassword,hintConfirmPassword;
-    private JTextField username;
+    private JTextField hintEmail, hintUsername,hintPassword,hintConfirmPassword;
+    private JTextField email, username;
     private JPasswordField jPasswordField;
     private JPasswordField confirmJPasswordField;
+    private JButton createAccount, exit;
     //TODO: this will need to check if there is an account already with that name.
     private JButton connect;
     public CreateAccount() {
+        setSize(600, 400);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setTitle("Chat - Create Account");
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
+        hintEmail = new JTextField("Email: ");
+        hintEmail.setBackground(getBackground());
+        hintEmail.setEditable(false);
+        hintEmail.setBorder(BorderFactory.createLineBorder(getBackground()));
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        add(hintEmail, gbc);
+
+        gbc.gridx = 1;
+        email = new JTextField("", 10);
+        add(email, gbc);
+
         hintUsername = new JTextField("Username: ");
         hintUsername.setBackground(getBackground());
         hintUsername.setEditable(false);
         hintUsername.setBorder(BorderFactory.createLineBorder(getBackground()));
         gbc.gridx = 0;
-        gbc.gridy = 0;
+        gbc.gridy = 1;
         add(hintUsername, gbc);
 
 
@@ -36,7 +54,7 @@ public class CreateAccount extends JFrame {
 
 
         gbc.gridx = 0;
-        gbc.gridy = 1;
+        gbc.gridy = 2;
         hintPassword = new JTextField("Password: ");
         hintPassword.setBackground(getBackground());
         hintPassword.setEditable(false);
@@ -48,7 +66,7 @@ public class CreateAccount extends JFrame {
         add(jPasswordField, gbc);
 
         gbc.gridx = 0;
-        gbc.gridy = 2;
+        gbc.gridy = 3;
         hintConfirmPassword = new JTextField("Confirm Password: ");
         hintConfirmPassword.setBackground(getBackground());
         hintConfirmPassword.setEditable(false);
@@ -58,6 +76,54 @@ public class CreateAccount extends JFrame {
         gbc.gridx = 1;
         confirmJPasswordField = new JPasswordField("", 15);
         add(confirmJPasswordField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+
+        createAccount = new JButton("Create Account");
+        createAccount.addActionListener(new CreateAccountListener());
+        add(createAccount, gbc);
+
+        gbc.gridx = 1;
+        exit = new JButton("Exit (hover)");
+        exit.setToolTipText("Clicking this will not create an account, remove all fields and Chat windows.");
+        exit.addActionListener(new CreateAccountListener());
+        add(exit, gbc);
+
+        setVisible(true);
+    }
+
+    public class CreateAccountListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent ev) {
+            if(ev.getSource() == createAccount) {
+                //TODO: check passwords are the same for both.
+
+
+                char[] password = jPasswordField.getPassword();
+                String stringPass = "";
+                for(int x = 0; x < password.length; x++) {
+                    stringPass = stringPass + password[x];
+                }
+
+                char[] checkPass=  confirmJPasswordField.getPassword();
+                String confirmStringPass = "";
+                for(int x = 0; x < checkPass.length; x++) {
+                    confirmStringPass = confirmStringPass + checkPass[x];
+                }
+                if(!stringPass.equals(confirmStringPass)) {
+                    //TODO: throw an error window @ them.
+                    return;
+                }
+                ClientSocket clientSocket = new ClientSocket();
+                clientSocket.connect();
+                CreateAccountFormat createAccountFormat = new CreateAccountFormat(RequestType.CREATE_ACCOUNT, email.getText(), username.getText(), stringPass);
+                clientSocket.printWriter.println("{\"type\":\""+createAccountFormat.getType().getName() + "\",\"email\":\""+createAccountFormat.getEmail()+"\",\"username\":\""+createAccountFormat.getUsername()+"\",\"password\":\""+createAccountFormat.getPassword() + "\"}");
+                clientSocket.printWriter.flush();
+                //TODO: check if all fields are "eligible" meaning email is proper format, password is good, etc,.
+            }
+        }
     }
 
 }
