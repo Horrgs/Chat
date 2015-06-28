@@ -10,24 +10,24 @@ import org.horrgs.chat.server.usertypes.User;
  * an instance of MessageFormat as it contains the data for it to send to all others.
  */
 public class MessageFormat {
-    private String type;  //TODO: this should be RequestType, not String.
+    private RequestType type;  //TODO: this should be RequestType, not String.
     private String sender;
     private String message;
 
-    public MessageFormat(String type, String sender, String message) {
+    public MessageFormat(RequestType type, String sender, String message) {
         this.type = type;
         this.sender = sender;
         this.message = message;
     }
 
-    public MessageFormat(String type, User user, String message) {
+    public MessageFormat(RequestType type, User user, String message) {
         this.type = type;
         this.sender = user.getUsername();
         this.message = message;
     }
 
     public String getMessage() {
-        if(type.equals("message")) {
+        if(type == RequestType.SEND_MESSAGE) {
             return message;
         }
         return "";
@@ -37,7 +37,7 @@ public class MessageFormat {
         return sender;
     }
 
-    public String getType() {
+    public RequestType getType() {
         return type;
     }
 }
