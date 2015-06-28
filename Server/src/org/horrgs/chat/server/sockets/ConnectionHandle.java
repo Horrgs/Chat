@@ -44,6 +44,7 @@ public class ConnectionHandle implements Runnable {
         String receivingMessage;
         try {
             while((receivingMessage = bufferedReader.readLine()) != null) {
+                System.out.println(receivingMessage);
                 Gson gson = new Gson();
                 if (receivingMessage.startsWith("{\"type\":\"SEND_MESSAGE")) {
                     MessageFormat messageFormat = gson.fromJson(receivingMessage, MessageFormat.class);
@@ -76,7 +77,7 @@ public class ConnectionHandle implements Runnable {
                         //TODO: write back "incorrect email, username or password."
                     }
                 } else if(receivingMessage.startsWith("{\"type\":\"CREATE_ACCOUNT")) {
-                    //TODO: create account.
+                    System.out.println(receivingMessage);
                 }
             }
         } catch (IOException ex) {

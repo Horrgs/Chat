@@ -1,19 +1,15 @@
 package org.horrgs.chat.server;
 
-import org.horrgs.chat.server.usertypes.Status;
-import org.horrgs.chat.server.usertypes.User;
-import org.horrgs.chat.server.usertypes.UserManager;
+import org.horrgs.chat.server.sockets.ConnectionHandle;
 
 /**
  * Created by Horrgs on 5/14/2015.
  */
 public class Chat {
+    //TODO: have a JSON ready string for each Format class so it's easier to send to the client for the server and easier for the client to send to the server.
+    //TODO: we also need not to only check if there is an account with that email but already an account with that username.
 
     public static void main(String[] args) throws InterruptedException {
-        //new ConnectionHandle().start();
-        String sender = "Horrgs", message = "hello.";
-        System.out.println("{\"type\":message\",\"sender\":"+ sender +"\",\"message\":\"" + message +"\"}");
-
-        ///Hello.
+        new ConnectionHandle().start();
     }
 }
