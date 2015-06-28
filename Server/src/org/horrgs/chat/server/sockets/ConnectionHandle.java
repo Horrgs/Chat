@@ -3,8 +3,12 @@ package org.horrgs.chat.server.sockets;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import org.horrgs.chat.server.types.RequestType;
 import org.horrgs.chat.server.types.incoming.LoginFormat;
 import org.horrgs.chat.server.types.MessageFormat;
+import org.horrgs.chat.server.types.outgoing.ErrorFormat;
+import org.horrgs.chat.server.usertypes.User;
+import org.horrgs.chat.server.usertypes.UserManager;
 import sun.plugin2.message.Message;
 
 import java.io.*;
@@ -41,11 +45,13 @@ public class ConnectionHandle implements Runnable {
         try {
             while((receivingMessage = bufferedReader.readLine()) != null) {
                 Gson gson = new Gson();
-                if (receivingMessage.startsWith("\"type\":message\",")) {
-                    //TODO: check if account is authorized
+                if (receivingMessage.startsWith("{\"type\":\"SEND_MESSAGE")) {
                     MessageFormat messageFormat = gson.fromJson(receivingMessage, MessageFormat.class);
-                    sendToAll(messageFormat.getSender(), messageFormat.getMessage());
-                } else if(receivingMessage.startsWith("\"type\":login")) {
+                    User sender = UserManager.getInstance().getUser(messageFormat.getSender());
+                    if(sender != null && sender.isAuthoized()) {
+                        sendToAll(messageFormat.getSender(), messageFormat.getMessage());
+                    }
+                } else if(receivingMessage.startsWith("{\"type\":\"LOGIN")) {
                     LoginFormat loginFormat = gson.fromJson(receivingMessage, LoginFormat.class);
                     JsonParser jsonParser = new JsonParser();
                     JsonObject jsonObject = null;
@@ -62,11 +68,15 @@ public class ConnectionHandle implements Runnable {
                         if (jsonObject.get(loginFormat.getUsername()).getAsJsonObject().get("password").equals(loginFormat.getPassword())) {
                             //TODO: authorize.
                         } else {
-                            //TODO: write back "incorrect username or password."
+                            ErrorFormat errorFormat = new ErrorFormat(RequestType.ERROR, "Incorrect email, username or password.");
+                            //TODO: write back "incorrect email, username or password."
                         }
                     } else {
-                        //TODO: write back "incorrect username or password."
+                        ErrorFormat errorFormat = new ErrorFormat(RequestType.ERROR, "Incorrect email, username or password.");
+                        //TODO: write back "incorrect email, username or password."
                     }
+                } else if(receivingMessage.startsWith("{\"type\":\"CREATE_ACCOUNT")) {
+                    //TODO: create account.
                 }
             }
         } catch (IOException ex) {
@@ -92,13 +102,21 @@ public class ConnectionHandle implements Runnable {
     }
 
     public void sendToAll(String sender, String message) {
+        MessageFormat messageFormat = new MessageFormat(RequestType.SEND_MESSAGE, sender, message);
+        sendToAll(messageFormat);
+    }
+
+    public void sendToAll(User sender, String message) {
+        MessageFormat messageFormat = new MessageFormat(RequestType.SEND_MESSAGE, sender.getUsername(), message);
+        sendToAll(messageFormat);
+    }
+
+    public void sendToAll(MessageFormat messageFormat) {
         Iterator it = clientOutputStreams.iterator();
         while(it.hasNext()) {
             try {
                 PrintWriter printWriter = (PrintWriter) it.next();
-                //TODO: I believe MessageFormat works for this too.
-                printWriter.println("{\"type\":message\",\"sender\":"+ sender +"\",\"message\":\"" + message +"\"}");
-                printWriter.flush();
+                printWriter.println("{\"type\":\""+messageFormat.getType().getName() + "\",\"sender\":\""+messageFormat.getSender()+"\",\"message\":\""+messageFormat.getMessage()+"\"}");
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
