@@ -10,19 +10,13 @@ import org.horrgs.chat.server.types.RequestType;
  */
 public class CreateAccountFormat {
     private RequestType requestType;
+    private String email;
     private String username;
     private String password;
 
-    public CreateAccountFormat(RequestType requestType, String username, String password) {
+    public CreateAccountFormat(RequestType requestType, String email, String username, String password) {
+        this.email = email;
         this.requestType = requestType;
-        this.username = username;
-        this.password = password;
-    }
-
-    public CreateAccountFormat(String requestType, String username, String password) {
-        RequestType requestType1 = RequestType.LOGIN;
-        requestType1 = requestType1.getByType(requestType);
-        this.requestType = requestType1;
         this.username = username;
         this.password = password;
     }
@@ -37,5 +31,13 @@ public class CreateAccountFormat {
 
     protected String getPassword() {
         return password;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
