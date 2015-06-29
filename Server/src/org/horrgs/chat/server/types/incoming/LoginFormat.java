@@ -9,7 +9,7 @@ public class LoginFormat {
     private RequestType requestType;
     private String username;
     private String password;
-    
+    //TODO: needs support of email.
     public LoginFormat(RequestType requestType, String username, String password) {
         this.requestType = requestType;
         this.username = username;

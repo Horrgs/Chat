@@ -29,7 +29,7 @@ public class CreateAccountFormat {
         return username;
     }
 
-    protected String getPassword() {
+    public String getPassword() {
         return password;
     }
 
