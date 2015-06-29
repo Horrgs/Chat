@@ -1,4 +1,4 @@
-package org.horrgs.chat.client.types.incoming;
+package org.horrgs.chat.client.types.outgoing;
 
 import org.horrgs.chat.client.types.RequestType;
 
