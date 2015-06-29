@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.horrgs.chat.server.types.RequestType;
+import org.horrgs.chat.server.types.incoming.CreateAccountFormat;
 import org.horrgs.chat.server.types.incoming.LoginFormat;
 import org.horrgs.chat.server.types.MessageFormat;
 import org.horrgs.chat.server.types.outgoing.ErrorFormat;
@@ -23,7 +24,11 @@ import java.util.Iterator;
 public class ConnectionHandle implements Runnable {
     private BufferedReader bufferedReader;
     private Socket clientSocket;
-    ArrayList clientOutputStreams;
+    private static ConnectionHandle instance = new ConnectionHandle();
+    public static ConnectionHandle getInstance() {
+        return instance;
+    }
+    ArrayList<PrintWriter> clientOutputStreams = new ArrayList<>();
 
     public ConnectionHandle() {
         super();
@@ -65,11 +70,13 @@ public class ConnectionHandle implements Runnable {
                     if(jsonObject == null) {
                         return;
                     }
+                    //TODO: this needs to switch to email below.
                     if(jsonObject.get(loginFormat.getUsername()).getAsJsonObject() != null) {
                         if (jsonObject.get(loginFormat.getUsername()).getAsJsonObject().get("password").equals(loginFormat.getPassword())) {
                             //TODO: authorize.
                         } else {
                             ErrorFormat errorFormat = new ErrorFormat(RequestType.ERROR, "Incorrect email, username or password.");
+
                             //TODO: write back "incorrect email, username or password."
                         }
                     } else {
@@ -77,7 +84,35 @@ public class ConnectionHandle implements Runnable {
                         //TODO: write back "incorrect email, username or password."
                     }
                 } else if(receivingMessage.startsWith("{\"type\":\"CREATE_ACCOUNT")) {
-                    System.out.println(receivingMessage);
+                    //TODO: need to check if there is already an account with that username,
+                    CreateAccountFormat createAccountFormat = gson.fromJson(receivingMessage, CreateAccountFormat.class);
+                    JsonParser jsonParser = new JsonParser();
+                    JsonObject jsonObject = null;
+                    try {
+                        Object obj = jsonParser.parse(new FileReader("users.json"));
+                        jsonObject = (JsonObject) obj;
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                    if(jsonObject == null) {
+                        return;
+                    }
+                    System.out.println(clientOutputStreams.size());
+                    if(jsonObject.get(createAccountFormat.getEmail()) == null) {
+                        System.out.println("entered.");
+                        JsonObject email = new JsonObject();
+                        jsonObject.add(createAccountFormat.getEmail(), email);
+                        email.addProperty("email", createAccountFormat.getEmail());
+                        email.addProperty("username", createAccountFormat.getUsername());
+                        email.addProperty("password", createAccountFormat.getPassword());
+                        PrintWriter printWriter = new PrintWriter(new FileWriter("users.json"));
+                        printWriter.write(jsonObject.toString());
+                        printWriter.flush();
+                        printWriter.close();
+                    } else {
+                        System.out.println("Already an account w/ that email.");
+                        //TODO: already an account with that email.
+                    }
                 }
             }
         } catch (IOException ex) {
@@ -86,14 +121,12 @@ public class ConnectionHandle implements Runnable {
     }
 
     public void start() {
-        clientOutputStreams = new ArrayList();
         try {
             ServerSocket serverSocket = new ServerSocket(5000);
             while(true) {
                 Socket client = serverSocket.accept();
                 PrintWriter printWriter = new PrintWriter(client.getOutputStream());
                 clientOutputStreams.add(printWriter);
-
                 Thread t = new Thread(new ConnectionHandle(client));
                 t.start();
             }
