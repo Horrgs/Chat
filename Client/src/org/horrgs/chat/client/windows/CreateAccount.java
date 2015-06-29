@@ -2,7 +2,7 @@ package org.horrgs.chat.client.windows;
 
 import org.horrgs.chat.client.ClientSocket;
 import org.horrgs.chat.client.types.RequestType;
-import org.horrgs.chat.client.types.incoming.CreateAccountFormat;
+import org.horrgs.chat.client.types.outgoing.CreateAccountFormat;
 
 import javax.swing.*;
 import java.awt.*;
@@ -62,7 +62,7 @@ public class CreateAccount extends JFrame {
         add(hintPassword, gbc);
 
         gbc.gridx = 1;
-        jPasswordField = new JPasswordField("", 15);
+        jPasswordField = new JPasswordField("", 10);
         add(jPasswordField, gbc);
 
         gbc.gridx = 0;
@@ -74,7 +74,7 @@ public class CreateAccount extends JFrame {
         add(hintConfirmPassword, gbc);
 
         gbc.gridx = 1;
-        confirmJPasswordField = new JPasswordField("", 15);
+        confirmJPasswordField = new JPasswordField("", 10);
         add(confirmJPasswordField, gbc);
 
         gbc.gridx = 0;
@@ -125,5 +125,4 @@ public class CreateAccount extends JFrame {
             }
         }
     }
-
 }
