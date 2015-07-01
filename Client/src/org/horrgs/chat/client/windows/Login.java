@@ -24,6 +24,7 @@ public class Login extends JFrame {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setTitle("Chat - Login");
         //TODO: for future, make a method for hints that set all the info for it like not editable, etc,. Did this before in some project, look back.
+        //https://github.com/Horrgs/Agenda/blob/master/src/org/horrgs/agenda/windows/SignUp.java#L50-L65
         hintEmail = new JTextField("Email: ");
         setSize(400, 400);
         hintEmail.setEditable(false);

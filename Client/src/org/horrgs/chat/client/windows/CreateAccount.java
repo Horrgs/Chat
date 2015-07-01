@@ -18,7 +18,6 @@ public class CreateAccount extends JFrame {
     private JPasswordField jPasswordField;
     private JPasswordField confirmJPasswordField;
     private JButton createAccount, exit;
-    //TODO: this will need to check if there is an account already with that name.
     private JButton connect;
     public CreateAccount() {
         setSize(600, 400);
