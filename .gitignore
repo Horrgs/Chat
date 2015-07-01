@@ -84,3 +84,9 @@ Temporary Items
  +*.ipr
  +*.iws
  +.idea/
+*.iml
+*.class
+*.xml
+*.json
+Server/usernames.txt
+*.name
