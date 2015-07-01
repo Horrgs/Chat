@@ -1,6 +1,7 @@
 package org.horrgs.chat.client;
 
 import com.google.gson.Gson;
+import org.horrgs.chat.client.types.RequestType;
 import org.horrgs.chat.client.windows.Error;
 import org.horrgs.chat.client.types.ErrorFormat;
 import org.horrgs.chat.client.types.MessageFormat;
@@ -17,14 +18,23 @@ public class ClientSocket implements Runnable {
     public BufferedReader bufferedReader;
     public PrintWriter printWriter;
 
+    public PrintWriter getWriterToServer() {
+        return printWriter;
+    }
+
+    public BufferedReader getReaderFromServer() {
+        return bufferedReader;
+    }
+
     public void connect() {
-        //TODO: need to do a forever loop listening for incoming msgs.
         try {
             socket = new Socket("127.0.0.1", 5000);
             InputStreamReader inputStreamReader = new InputStreamReader(socket.getInputStream());
             bufferedReader = new BufferedReader(inputStreamReader);
             printWriter = new PrintWriter(socket.getOutputStream());
             System.out.println("Connection established.");
+            Thread readerAndRunner = new Thread(this);
+            readerAndRunner.start();
         } catch (IOException ex) {
             ex.printStackTrace();
             System.out.println("Issues connecting to 127.0.0.1 on port 5000");
@@ -44,9 +54,9 @@ public class ClientSocket implements Runnable {
                 } else if(incomingMessage.startsWith("{\"type\":\"ERROR")) {
                     ErrorFormat errorFormat = gson.fromJson(incomingMessage, ErrorFormat.class);
                     new Error(errorFormat.getMessage(), new Dimension(400, 400));
-                    //TODO: open error window / prompt (I think error will happen enough to have it's own class.)
                 } else {
-                    //TODO: send an error format to server for an unknown message type.
+                    ErrorFormat errorFormat = new ErrorFormat(RequestType.ERROR, "A unknown REQUEST_TYPE has been sent to a client. Here is the message: " + incomingMessage);
+                    getWriterToServer().println("{\"type\":\""+errorFormat.getRequestType() + "\",\"message\":\""+incomingMessage+"\"}");
                 }
             }
         } catch (IOException ex) {
