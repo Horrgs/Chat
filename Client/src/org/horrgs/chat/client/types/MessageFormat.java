@@ -8,7 +8,7 @@ package org.horrgs.chat.client.types;
  * an instance of MessageFormat as it contains the data for it to send to all others.
  */
 public class MessageFormat {
-    private RequestType type;  //TODO: this should be RequestType, not String.
+    private RequestType type;
     private String sender;
     private String message;
 

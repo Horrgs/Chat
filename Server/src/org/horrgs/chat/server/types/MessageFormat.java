@@ -11,7 +11,7 @@ import org.horrgs.chat.server.usertypes.User;
  */
 public class MessageFormat {
     //TODO: needs to include a rank or what color the name should be so the
-    //TODO: client knows what color the sender's name should be in the chat box.
+    //client knows what color the sender's name should be in the chat box.
     private RequestType type;
     private String sender;
     private String message;
