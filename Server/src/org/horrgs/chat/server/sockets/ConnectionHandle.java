@@ -49,7 +49,6 @@ public class ConnectionHandle implements Runnable {
         String receivingMessage;
         try {
             while((receivingMessage = bufferedReader.readLine()) != null) {
-                System.out.println(receivingMessage);
                 Gson gson = new Gson();
                 if (receivingMessage.startsWith("{\"type\":\"SEND_MESSAGE")) {
                     MessageFormat messageFormat = gson.fromJson(receivingMessage, MessageFormat.class);
@@ -97,9 +96,8 @@ public class ConnectionHandle implements Runnable {
                     if(jsonObject == null) {
                         return;
                     }
-                    System.out.println(clientOutputStreams.size());
+
                     if(jsonObject.get(createAccountFormat.getEmail()) == null) {
-                        System.out.println("entered.");
                         JsonObject email = new JsonObject();
                         jsonObject.add(createAccountFormat.getEmail(), email);
                         email.addProperty("email", createAccountFormat.getEmail());
@@ -110,8 +108,14 @@ public class ConnectionHandle implements Runnable {
                         printWriter.flush();
                         printWriter.close();
                     } else {
-                        System.out.println("Already an account w/ that email.");
-                        //TODO: already an account with that email.
+                        if(clientSocket != null) {
+                            if(clientSocket.getOutputStream() != null) {
+                                PrintWriter printWriter = new PrintWriter(clientSocket.getOutputStream());
+                                printWriter.println("already an account w/ that email..");
+                                printWriter.flush();
+                                //TODO: it's being written, look at ClientSocket TODO.
+                            }
+                        }
                     }
                 }
             }
@@ -126,7 +130,7 @@ public class ConnectionHandle implements Runnable {
             while(true) {
                 Socket client = serverSocket.accept();
                 PrintWriter printWriter = new PrintWriter(client.getOutputStream());
-                clientOutputStreams.add(printWriter);
+                ConnectionHandle.getInstance().clientOutputStreams.add(printWriter);
                 Thread t = new Thread(new ConnectionHandle(client));
                 t.start();
             }

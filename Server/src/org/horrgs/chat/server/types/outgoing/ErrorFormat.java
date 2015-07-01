@@ -9,6 +9,10 @@ import org.horrgs.chat.server.types.RequestType;
  * If the email, username or password is wrong this is the class to use.
  */
 public class ErrorFormat {
+    /*
+     TODO: THIS MAY BECOME AN INCOMING CLASS TO IN CASE A STACK TRACE IS THROWN IT MAY
+    BE SENT TO THE SERVER. ALSO, WE SHOULD LOG ALL ERRORS.
+     */
     private RequestType requestType;
     private String message;
 
