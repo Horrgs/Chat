@@ -13,7 +13,6 @@ import java.awt.event.ActionListener;
  * Created by Horrgs on 5/15/2015.
  */
 public class CreateAccount extends JFrame {
-    //TODO: email.
     private JTextField hintEmail, hintUsername,hintPassword,hintConfirmPassword;
     private JTextField email, username;
     private JPasswordField jPasswordField;
@@ -85,8 +84,8 @@ public class CreateAccount extends JFrame {
         add(createAccount, gbc);
 
         gbc.gridx = 1;
-        exit = new JButton("Exit (hover)");
-        exit.setToolTipText("Clicking this will not create an account, remove all fields and Chat windows.");
+        exit = new JButton("Return (hover)");
+        exit.setToolTipText("Clicking this will not create an account and remove all info in fields.");
         exit.addActionListener(new CreateAccountListener());
         add(exit, gbc);
 
@@ -98,9 +97,6 @@ public class CreateAccount extends JFrame {
         @Override
         public void actionPerformed(ActionEvent ev) {
             if(ev.getSource() == createAccount) {
-                //TODO: check passwords are the same for both.
-
-
                 char[] password = jPasswordField.getPassword();
                 String stringPass = "";
                 for(int x = 0; x < password.length; x++) {
@@ -113,7 +109,7 @@ public class CreateAccount extends JFrame {
                     confirmStringPass = confirmStringPass + checkPass[x];
                 }
                 if(!stringPass.equals(confirmStringPass)) {
-                    //TODO: throw an error window @ them.
+                    new Error("The password and the confirm password do not match. ", new Dimension(400, 400));
                     return;
                 }
                 ClientSocket clientSocket = new ClientSocket();
@@ -122,6 +118,9 @@ public class CreateAccount extends JFrame {
                 clientSocket.printWriter.println("{\"type\":\""+createAccountFormat.getType().getName() + "\",\"email\":\""+createAccountFormat.getEmail()+"\",\"username\":\""+createAccountFormat.getUsername()+"\",\"password\":\""+createAccountFormat.getPassword() + "\"}");
                 clientSocket.printWriter.flush();
                 //TODO: check if all fields are "eligible" meaning email is proper format, password is good, etc,.
+            } else if(ev.getSource() == exit) {
+                setVisible(false);
+                new MainMenu();
             }
         }
     }
