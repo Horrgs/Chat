@@ -35,7 +35,8 @@ public class MainMenu extends JFrame {
                 setVisible(false);
                 new CreateAccount();
             } else if(ev.getSource() == login) {
-                //TODO: login window.
+                setVisible(false);
+                new Login();
             }
         }
     }

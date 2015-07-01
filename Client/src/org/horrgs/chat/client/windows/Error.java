@@ -21,7 +21,7 @@ public class Error extends JFrame {
 
     public Error(String message, Dimension dimension) {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Error");
+        setTitle("Chat - Error");
         setSize(dimension);
         setLayout(new GridBagLayout());
         GridBagConstraints gridBagConstraints = new GridBagConstraints();
