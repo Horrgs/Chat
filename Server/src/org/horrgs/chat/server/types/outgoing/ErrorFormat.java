@@ -11,10 +11,11 @@ import org.horrgs.chat.server.types.RequestType;
 public class ErrorFormat {
     private RequestType requestType;
     private String message;
-
+    private String jsonFormat;
     public ErrorFormat(RequestType requestType, String message) {
         this.requestType = requestType;
         this.message = message;
+        this.jsonFormat = "{\"type\":\"" + requestType.getName() + "\",\"message\":\"" + message+"\"}";
     }
 
     public RequestType getRequestType() {
@@ -24,4 +25,6 @@ public class ErrorFormat {
     public String getMessage() {
         return message;
     }
+
+    public String getJsonFormat() { return jsonFormat; }
 }
