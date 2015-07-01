@@ -17,6 +17,10 @@ public interface User {
 
     public boolean isAuthoized();
 
+    public String getEmail();
+
+    public String getColoredName();
+
     public void setUsername(String string);
 
     public void setRank(RankManager.Rank rank);
@@ -30,4 +34,8 @@ public interface User {
     public void sendMessage(String message);
 
     public void setAuthoized(boolean authorized);
+
+    public void setEmail(String email);
+
+    public void setColoredName(String color);
 }
