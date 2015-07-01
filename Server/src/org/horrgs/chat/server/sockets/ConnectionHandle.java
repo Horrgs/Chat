@@ -3,6 +3,7 @@ package org.horrgs.chat.server.sockets;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import org.horrgs.chat.server.UsernameParser;
 import org.horrgs.chat.server.types.RequestType;
 import org.horrgs.chat.server.types.incoming.CreateAccountFormat;
 import org.horrgs.chat.server.types.incoming.LoginFormat;
@@ -53,7 +54,7 @@ public class ConnectionHandle implements Runnable {
                     MessageFormat messageFormat = gson.fromJson(receivingMessage, MessageFormat.class);
                     User sender = UserManager.getInstance().getUser(messageFormat.getSender());
                     if(sender != null && sender.isAuthoized()) {
-                        sendToAll(messageFormat.getSender(), messageFormat.getMessage());
+                        sendToAll(messageFormat.getSender(), messageFormat.getMessage(), sender.getColoredName());
                     }
                 } else if(receivingMessage.startsWith("{\"type\":\"LOGIN")) {
                     LoginFormat loginFormat = gson.fromJson(receivingMessage, LoginFormat.class);
@@ -65,25 +66,31 @@ public class ConnectionHandle implements Runnable {
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }
-                    if(jsonObject == null) {
-                        return;
-                    }
-                    if(jsonObject.get(loginFormat.getEmail()).getAsJsonObject() != null) {
-                        if (jsonObject.get(loginFormat.getUsername()).getAsJsonObject().get("password").equals(loginFormat.getPassword())) {
-                            //TODO: authorize.
+
+                    if(jsonObject != null) {
+                        if(jsonObject.get(loginFormat.getEmail()).getAsJsonObject() != null) {
+                            if (jsonObject.get(loginFormat.getUsername()).getAsJsonObject().get("password").getAsString().equals(loginFormat.getPassword())) {
+                                new UserManager(loginFormat.getUsername());
+                            } else {
+                                ErrorFormat errorFormat = new ErrorFormat(RequestType.ERROR, "Incorrect email, username or password.");
+                                PrintWriter clientStream = new PrintWriter(clientSocket.getOutputStream());
+                                clientStream.println("{\"type\":\""+errorFormat.getRequestType().getName() + "\",\"message\":\""+errorFormat.getMessage()+"\"}");
+                                //TODO: I'd assume this would have to "flush" and "close".
+                            }
                         } else {
                             ErrorFormat errorFormat = new ErrorFormat(RequestType.ERROR, "Incorrect email, username or password.");
                             PrintWriter clientStream = new PrintWriter(clientSocket.getOutputStream());
                             clientStream.println("{\"type\":\""+errorFormat.getRequestType().getName() + "\",\"message\":\""+errorFormat.getMessage()+"\"}");
+                            //TODO: I'd assume this would have to "flush" and "close".
                         }
-                    } else {
-                        ErrorFormat errorFormat = new ErrorFormat(RequestType.ERROR, "Incorrect email, username or password.");
-                        PrintWriter clientStream = new PrintWriter(clientSocket.getOutputStream());
-                        clientStream.println("{\"type\":\""+errorFormat.getRequestType().getName() + "\",\"message\":\""+errorFormat.getMessage()+"\"}");
                     }
                 } else if(receivingMessage.startsWith("{\"type\":\"CREATE_ACCOUNT")) {
-                    //TODO: need to check if there is already an account with that username,
                     CreateAccountFormat createAccountFormat = gson.fromJson(receivingMessage, CreateAccountFormat.class);
+                    if(new UsernameParser().isUsernameTaken(createAccountFormat.getUsername())) {
+                        ErrorFormat errorFormat = new ErrorFormat(RequestType.ERROR, "There is already an account with that username.");
+                        PrintWriter printWriter = new PrintWriter(clientSocket.getOutputStream());
+                        printWriter.println("{\"type\":\""+errorFormat.getRequestType().getName()+"\",\"message\":\""+errorFormat.getMessage()+"\"}");
+                    }
                     JsonParser jsonParser = new JsonParser();
                     JsonObject jsonObject = null;
                     try {
@@ -92,26 +99,17 @@ public class ConnectionHandle implements Runnable {
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }
-                    if(jsonObject == null) {
-                        return;
-                    }
-
-                    if(jsonObject.get(createAccountFormat.getEmail()) == null) {
-                        JsonObject email = new JsonObject();
-                        jsonObject.add(createAccountFormat.getEmail(), email);
-                        email.addProperty("email", createAccountFormat.getEmail());
-                        email.addProperty("username", createAccountFormat.getUsername());
-                        email.addProperty("password", createAccountFormat.getPassword());
-                        PrintWriter printWriter = new PrintWriter(new FileWriter("users.json"));
-                        printWriter.write(jsonObject.toString());
-                        printWriter.flush();
-                        printWriter.close();
-                    } else {
-                        if(clientSocket != null) {
-                            if(clientSocket.getOutputStream() != null) {
-                                PrintWriter printWriter = new PrintWriter(clientSocket.getOutputStream());
-                                printWriter.println("already an account w/ that email..");
-                                printWriter.flush();
+                    if(jsonObject != null) {
+                        if(jsonObject.get(createAccountFormat.getEmail()) == null) {
+                            UserManager.getInstance().writeNewUser(createAccountFormat);
+                        } else {
+                            if(clientSocket != null) {
+                                if(clientSocket.getOutputStream() != null) {
+                                    PrintWriter printWriter = new PrintWriter(clientSocket.getOutputStream());
+                                    ErrorFormat errorFormat = new ErrorFormat(RequestType.ERROR, "There is already an account with that email.");
+                                    printWriter.println("{\"type\":\""+errorFormat.getRequestType()+"\",\"message\":\""+errorFormat.getMessage()+"\"}");
+                                    //TODO: I'd assume this would have to "flush" and "close".
+                                }
                             }
                         }
                     }
@@ -139,13 +137,13 @@ public class ConnectionHandle implements Runnable {
         }
     }
 
-    public void sendToAll(String sender, String message) {
-        MessageFormat messageFormat = new MessageFormat(RequestType.SEND_MESSAGE, sender, message);
+    public void sendToAll(String sender, String message, String color) {
+        MessageFormat messageFormat = new MessageFormat(RequestType.SEND_MESSAGE, sender, message, UserManager.getInstance().getUser(sender).getColoredName());
         sendToAll(messageFormat);
     }
 
     public void sendToAll(User sender, String message) {
-        MessageFormat messageFormat = new MessageFormat(RequestType.SEND_MESSAGE, sender.getUsername(), message);
+        MessageFormat messageFormat = new MessageFormat(RequestType.SEND_MESSAGE, sender.getUsername(), message, sender.getColoredName());
         sendToAll(messageFormat);
     }
 
@@ -154,7 +152,7 @@ public class ConnectionHandle implements Runnable {
         while(it.hasNext()) {
             try {
                 PrintWriter printWriter = (PrintWriter) it.next();
-                printWriter.println("{\"type\":\""+messageFormat.getType().getName() + "\",\"sender\":\""+messageFormat.getSender()+"\",\"message\":\""+messageFormat.getMessage()+"\"}");
+                printWriter.println(messageFormat.getJsonFormat());
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

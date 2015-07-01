@@ -2,6 +2,7 @@ package org.horrgs.chat.server.usertypes;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import org.horrgs.chat.server.types.incoming.CreateAccountFormat;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -18,15 +19,15 @@ public class UserManager implements User {
     private Status status;
     private String mostRecentMessage;
     private String password;
+    private String email;
     private boolean authoized;
+    private String color;
 
     public UserManager() {
         super();
     }
 
-    public UserManager(String username) {
-        //TODO: works. Although authorization will always return false when it's called so we must handle it without storing it in a file.
-        //Account is authorized at the current line #46
+    public UserManager(String email) {
         JsonObject jsonObject = new JsonObject();
         JsonParser jsonParser = new JsonParser();
         try {
@@ -40,17 +41,27 @@ public class UserManager implements User {
             existsAlready = true;
         }
         if(existsAlready) {
-            setUsername(jsonObject.get(username).getAsJsonObject().get("username").getAsString());
-            setPassword(jsonObject.get(username).getAsJsonObject().get("password").getAsString());
+            setUsername(jsonObject.get(email).getAsJsonObject().get("username").getAsString());
+            setPassword(jsonObject.get(email).getAsJsonObject().get("password").getAsString());
             setAuthoized(true);
-            setMostRecentMessage(jsonObject.get(username).getAsJsonObject().get("most_recent_message").getAsString());
+            setMostRecentMessage(jsonObject.get(email).getAsJsonObject().get("most_recent_message").getAsString());
             Status status = Status.OFFLINE;
-            status = status.getById(jsonObject.get(username).getAsJsonObject().get("status").getAsString());
+            status = status.getById(jsonObject.get(email).getAsJsonObject().get("status").getAsString());
             setStatus(status);
             RankManager.Rank rank = RankManager.Rank.USER;
-            rank = rank.getById(jsonObject.get(username).getAsJsonObject().get("rank").getAsString());
+            rank = rank.getById(jsonObject.get(email).getAsJsonObject().get("rank").getAsString());
             setRank(rank);
+            setEmail(jsonObject.get("email").getAsJsonObject().get("email").getAsString());
+            if(rank == RankManager.Rank.USER) {
+                setColoredName("black");
+            } else if(rank == RankManager.Rank.MODERATOR) {
+                //TODO: should be a light green
+                setColoredName("green");
+            } else if(rank == RankManager.Rank.ADMINISTRATOR) {
+                setColoredName("red");
+            }
         }
+        UserManager.getInstance().getUsersOnline().add(this);
     }
 
     @Override
@@ -83,7 +94,15 @@ public class UserManager implements User {
         return authoized;
     }
 
-    //TODO: all of the sets need to write to the json file
+    @Override
+    public String getEmail() {
+        return email;
+    }
+
+    @Override
+    public String getColoredName() {
+        return color;
+    }
 
     @Override
     public void setUsername(String username) {
@@ -120,8 +139,18 @@ public class UserManager implements User {
     public void setAuthoized(boolean authoized) {
         this.authoized = authoized;
     }
-    
-    public void writeNewUser(String username, String password, Status status) {
+
+    @Override
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    @Override
+    public void setColoredName(String color) {
+        this.color = color;
+    }
+
+    public void writeNewUser(CreateAccountFormat createAccountFormat) {
         //WORKS.
         JsonObject jsonObject = new JsonObject();
         JsonParser jsonParser = new JsonParser();
@@ -131,37 +160,30 @@ public class UserManager implements User {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-        JsonObject name = new JsonObject();
-        boolean existsAlready = false;
-        if(jsonObject.has(username)) {
-            existsAlready = true;
-        }
-        if(!existsAlready) {
-            name.addProperty("username", username);
-            name.addProperty("password", password);
-            name.addProperty("status", status.getId());
-            name.addProperty("most_recent_message", "Hello, my name is " + username + "!");
-            name.addProperty("rank", RankManager.Rank.USER.getId());
-            setUsername(username);
-            setPassword(password);
-            setStatus(status);
-            setMostRecentMessage(name.get("most_recent_message").getAsString());
-            RankManager.Rank rank = RankManager.Rank.USER;
-            setRank(rank.getById(name.get("rank").getAsString()));
-        } else {
-            return;
-        }
-
-        jsonObject.add(username, name);
         try {
-            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(new File("users.json"), false));
+            JsonObject email = new JsonObject();
+            jsonObject.add(createAccountFormat.getEmail(), email);
+            email.addProperty("email", createAccountFormat.getEmail());
+            email.addProperty("username", createAccountFormat.getUsername());
+            email.addProperty("password", createAccountFormat.getPassword());
+            email.addProperty("most_recent_message", "Hello, I am " + createAccountFormat.getUsername() + "!");
+            email.addProperty("status", Status.ONLINE.getId());
+            email.addProperty("rank", RankManager.Rank.USER.getId());
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("users.json"));
             bufferedWriter.write(jsonObject.toString());
             bufferedWriter.flush();
             bufferedWriter.close();
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+        setRank(RankManager.Rank.USER);
+        setMostRecentMessage("");
         setAuthoized(true);
+        setStatus(Status.ONLINE);
+        setPassword(createAccountFormat.getPassword());
+        setUsername(createAccountFormat.getUsername());
+        setEmail(createAccountFormat.getEmail());
+        UserManager.getInstance().getUsersOnline().add(this);
     }
 
     public List<User> usersOnline = new ArrayList<>();
