@@ -2,6 +2,8 @@ package org.horrgs.chat.server.types;
 
 import org.horrgs.chat.server.usertypes.User;
 
+import java.awt.*;
+
 /**
  * Created by Horrgs on 6/17/2015.
  *
@@ -10,16 +12,16 @@ import org.horrgs.chat.server.usertypes.User;
  * an instance of MessageFormat as it contains the data for it to send to all others.
  */
 public class MessageFormat {
-    //TODO: needs to include a rank or what color the name should be so the
-    //client knows what color the sender's name should be in the chat box.
     private RequestType type;
     private String sender;
     private String message;
+    private String jsonFormat;
 
-    public MessageFormat(RequestType type, String sender, String message) {
+    public MessageFormat(RequestType type, String sender, String message, String color) {
         this.type = type;
         this.sender = sender;
         this.message = message;
+        this.jsonFormat = "{\"type\":\"" + type.getName() + "\",\"sender\":\"" + sender + "\",\"message\":\""+message+"\",\"color\":\"" + color + "\"}";
     }
 
     public MessageFormat(RequestType type, User user, String message) {
@@ -42,4 +44,6 @@ public class MessageFormat {
     public RequestType getType() {
         return type;
     }
+
+    public String getJsonFormat() { return jsonFormat; }
 }
