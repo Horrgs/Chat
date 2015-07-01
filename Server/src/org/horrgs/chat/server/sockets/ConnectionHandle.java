@@ -10,7 +10,6 @@ import org.horrgs.chat.server.types.MessageFormat;
 import org.horrgs.chat.server.types.outgoing.ErrorFormat;
 import org.horrgs.chat.server.usertypes.User;
 import org.horrgs.chat.server.usertypes.UserManager;
-import sun.plugin2.message.Message;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -69,18 +68,18 @@ public class ConnectionHandle implements Runnable {
                     if(jsonObject == null) {
                         return;
                     }
-                    //TODO: this needs to switch to email below.
-                    if(jsonObject.get(loginFormat.getUsername()).getAsJsonObject() != null) {
+                    if(jsonObject.get(loginFormat.getEmail()).getAsJsonObject() != null) {
                         if (jsonObject.get(loginFormat.getUsername()).getAsJsonObject().get("password").equals(loginFormat.getPassword())) {
                             //TODO: authorize.
                         } else {
                             ErrorFormat errorFormat = new ErrorFormat(RequestType.ERROR, "Incorrect email, username or password.");
-
-                            //TODO: write back "incorrect email, username or password."
+                            PrintWriter clientStream = new PrintWriter(clientSocket.getOutputStream());
+                            clientStream.println("{\"type\":\""+errorFormat.getRequestType().getName() + "\",\"message\":\""+errorFormat.getMessage()+"\"}");
                         }
                     } else {
                         ErrorFormat errorFormat = new ErrorFormat(RequestType.ERROR, "Incorrect email, username or password.");
-                        //TODO: write back "incorrect email, username or password."
+                        PrintWriter clientStream = new PrintWriter(clientSocket.getOutputStream());
+                        clientStream.println("{\"type\":\""+errorFormat.getRequestType().getName() + "\",\"message\":\""+errorFormat.getMessage()+"\"}");
                     }
                 } else if(receivingMessage.startsWith("{\"type\":\"CREATE_ACCOUNT")) {
                     //TODO: need to check if there is already an account with that username,
@@ -113,10 +112,11 @@ public class ConnectionHandle implements Runnable {
                                 PrintWriter printWriter = new PrintWriter(clientSocket.getOutputStream());
                                 printWriter.println("already an account w/ that email..");
                                 printWriter.flush();
-                                //TODO: it's being written, look at ClientSocket TODO.
                             }
                         }
                     }
+                } else if(receivingMessage.startsWith("{\"type\":\"ERROR")) {
+                    //TODO: support for ERROR.
                 }
             }
         } catch (IOException ex) {
