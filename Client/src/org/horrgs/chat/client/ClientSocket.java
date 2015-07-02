@@ -2,9 +2,13 @@ package org.horrgs.chat.client;
 
 import com.google.gson.Gson;
 import org.horrgs.chat.client.types.RequestType;
+import org.horrgs.chat.client.types.Succession;
+import org.horrgs.chat.client.windows.CreateAccount;
 import org.horrgs.chat.client.windows.Error;
 import org.horrgs.chat.client.types.ErrorFormat;
 import org.horrgs.chat.client.types.MessageFormat;
+import org.horrgs.chat.client.windows.Login;
+import org.horrgs.chat.client.windows.MessageWindow;
 
 import java.awt.*;
 import java.io.*;
@@ -46,11 +50,29 @@ public class ClientSocket implements Runnable {
         String incomingMessage;
         try {
             while((incomingMessage = bufferedReader.readLine()) != null) {
+                System.out.println(incomingMessage);
                 Gson gson = new Gson();
                 if (incomingMessage.startsWith("{\"type\":\"SEND_MESSAGE")) {
                     MessageFormat messageFormat = gson.fromJson(incomingMessage, MessageFormat.class);
                     //textAreaofChat.append(messageFormat().getSender(), messageFormat.getMessage() + "\n");
                     //READ Server MessageFormat.
+                } else if(incomingMessage.startsWith("{\"type\":\"SUCCESSION")) {
+                    Succession succession = gson.fromJson(incomingMessage, Succession.class);
+                    System.out.println("1");
+                    if(succession.getSuccession() == RequestType.LOGIN) {
+                        System.out.println("2");
+                        new Login(false);
+                        new MessageWindow();
+                    } else if(succession.getSuccession() == RequestType.CREATE_ACCOUNT) {
+                        System.out.println("3");
+                        new CreateAccount(false);
+                        new MessageWindow();
+                    } else {
+                        System.out.println(succession.getSuccession());
+                        ErrorFormat errorFormat1 = new ErrorFormat(RequestType.ERROR, "You had an invalid succession type: " + succession.getSuccession().getName());
+                        getWriterToServer().println(errorFormat1.getJsonFormat());
+                    }
+
                 } else if(incomingMessage.startsWith("{\"type\":\"ERROR")) {
                     ErrorFormat errorFormat = gson.fromJson(incomingMessage, ErrorFormat.class);
                     new Error(errorFormat.getMessage(), new Dimension(400, 400));
