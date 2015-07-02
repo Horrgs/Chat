@@ -7,6 +7,7 @@ public enum RequestType {
     CREATE_ACCOUNT("CREATE_ACCOUNT"),
     LOGIN("LOGIN"),
     ERROR("ERROR"),
+    SUCCESSION("SUCCESSION"),
     SEND_MESSAGE("SEND_MESSAGE");
     private String name;
 
