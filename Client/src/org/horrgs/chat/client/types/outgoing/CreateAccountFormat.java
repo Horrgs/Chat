@@ -13,12 +13,14 @@ public class CreateAccountFormat {
     private String email;
     private String username;
     private String password;
+    private String jsonFormat;
 
     public CreateAccountFormat(RequestType requestType, String email, String username, String password) {
         this.email = email;
         this.requestType = requestType;
         this.username = username;
         this.password = password;
+        this.jsonFormat = "{\"type\":\"" + requestType.getName() + "\",\"email\":\"" + email + "\",\"username\":\"" + username + "\",\"password\":\"" + password + "\"}";
     }
 
     public RequestType getType() {
@@ -36,4 +38,6 @@ public class CreateAccountFormat {
     public String getEmail() {
         return email;
     }
+
+    public String getJsonFormat() { return jsonFormat; }
 }

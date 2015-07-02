@@ -11,11 +11,13 @@ public class MessageFormat {
     private RequestType type;
     private String sender;
     private String message;
+    private String jsonFormat;
 
     public MessageFormat(RequestType type, String sender, String message) {
         this.type = type;
         this.sender = sender;
         this.message = message;
+        this.jsonFormat = "{\"type\":\"" + type.getName() + "\",\"sender\":\"" + sender + "\",\"message\":\""+message+"\",\"color\":\"" + "NULL" + "\"}";
     }
 
 
@@ -33,4 +35,6 @@ public class MessageFormat {
     public RequestType getType() {
         return type;
     }
+
+    public String getJsonFormat() { return jsonFormat; }
 }
