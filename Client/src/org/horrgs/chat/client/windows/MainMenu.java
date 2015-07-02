@@ -26,6 +26,8 @@ public class MainMenu extends JFrame {
         login.addActionListener(new MainMenuListener());
         gbc.gridy = 1;
         add(login, gbc);
+
+        setVisible(true);
     }
 
     private class MainMenuListener implements ActionListener {

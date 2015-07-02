@@ -26,6 +26,9 @@ public class Error extends JFrame {
         setLayout(new GridBagLayout());
         GridBagConstraints gridBagConstraints = new GridBagConstraints();
         messageArea = new JTextArea(message);
+        messageArea.setEditable(false);
+        messageArea.setBackground(getBackground());
+        messageArea.setBorder(BorderFactory.createLineBorder(getBackground()));
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         add(messageArea, gridBagConstraints);
