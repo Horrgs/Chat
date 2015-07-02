@@ -18,7 +18,12 @@ public class CreateAccount extends JFrame {
     private JPasswordField jPasswordField;
     private JPasswordField confirmJPasswordField;
     private JButton createAccount, exit;
-    private JButton connect;
+
+    public CreateAccount(boolean window) {
+        setVisible(window);
+    }
+
+
     public CreateAccount() {
         setSize(600, 400);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
