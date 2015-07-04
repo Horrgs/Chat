@@ -1,5 +1,7 @@
 package org.horrgs.chat.client.types;
 
+import org.horrgs.chat.client.windows.MessageWindow;
+
 /**
  * Created by Horrgs on 6/17/2015.
  *
@@ -12,12 +14,13 @@ public class MessageFormat {
     private String sender;
     private String message;
     private String jsonFormat;
+    private String color;
 
-    public MessageFormat(RequestType type, String sender, String message) {
+    public MessageFormat(RequestType type, String sender, String message, String color) {
         this.type = type;
         this.sender = sender;
         this.message = message;
-        this.jsonFormat = "{\"type\":\"" + type.getName() + "\",\"sender\":\"" + sender + "\",\"message\":\""+message+"\",\"color\":\"" + "NULL" + "\"}";
+        this.jsonFormat = "{\"type\":\"" + type.getName() + "\",\"sender\":\"" + sender + "\",\"message\":\""+message+"\",\"color\":\"" + color + "\"}";
     }
 
 
@@ -37,4 +40,6 @@ public class MessageFormat {
     }
 
     public String getJsonFormat() { return jsonFormat; }
+
+    public String getColor() { return color; }
 }
