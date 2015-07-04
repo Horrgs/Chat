@@ -13,17 +13,13 @@ import java.awt.event.ActionListener;
 /**
  * Created by Horrgs on 7/1/2015.
  */
-public class Login  {
+public class Login extends JFrame {
     public JFrame jFrame = new JFrame();
     public JTextField hintEmail, hintUsername, hintPassword, email, username;
     public JPasswordField password;
     public JButton login, returnB;
-
-    public Login(boolean t) {
-        jFrame.setVisible(t);
-    }
     
-    public Login() {
+    public void openWindow() {
         jFrame.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         jFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -38,11 +34,11 @@ public class Login  {
         gbc.gridx = 0;
         gbc.gridy = 0;
         jFrame.add(hintEmail, gbc);
-        
-        email = new JTextField("", 15);
+
+        email = new JTextField("horrgs34@gmail.com", 15);
         gbc.gridx = 1;
         jFrame.add(email, gbc);
-        
+
         hintUsername = new JTextField("Username: ");
         hintUsername.setEditable(false);
         hintUsername.setBackground(jFrame.getBackground());
@@ -50,8 +46,8 @@ public class Login  {
         gbc.gridx = 0;
         gbc.gridy = 1;
         jFrame.add(hintUsername, gbc);
-        
-        username = new JTextField("", 15);
+
+        username = new JTextField("Horrgs", 15);
         gbc.gridx = 1;
         jFrame.add(username, gbc);
 
@@ -63,7 +59,7 @@ public class Login  {
         gbc.gridy = 2;
         jFrame.add(hintPassword, gbc);
 
-        password = new JPasswordField("", 15);
+        password = new JPasswordField("Mattiscool12?", 15);
         gbc.gridx = 1;
         jFrame.add(password, gbc);
 
@@ -96,6 +92,8 @@ public class Login  {
                 LoginFormat loginFormat = new LoginFormat(RequestType.LOGIN, email.getText(), username.getText(), pass);
                 clientSocket.printWriter.println(loginFormat.getJsonFormat());
                 clientSocket.printWriter.flush();
+                clientSocket.setMostRecentOutgoingMessage(loginFormat.getJsonFormat());
+                clientSocket.giveWindow(jFrame);
             } else if(ev.getSource() == returnB) {
                 jFrame.setVisible(false);
                 new MainMenu();
