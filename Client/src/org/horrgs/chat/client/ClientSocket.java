@@ -3,13 +3,15 @@ package org.horrgs.chat.client;
 import com.google.gson.Gson;
 import org.horrgs.chat.client.types.RequestType;
 import org.horrgs.chat.client.types.Succession;
-import org.horrgs.chat.client.windows.CreateAccount;
-import org.horrgs.chat.client.windows.Error;
+import org.horrgs.chat.client.types.outgoing.CreateAccountFormat;
+import org.horrgs.chat.client.types.outgoing.LoginFormat;
+import org.horrgs.chat.client.windows.*;
 import org.horrgs.chat.client.types.ErrorFormat;
 import org.horrgs.chat.client.types.MessageFormat;
-import org.horrgs.chat.client.windows.Login;
-import org.horrgs.chat.client.windows.MessageWindow;
+import org.horrgs.chat.client.windows.Error;
 
+import javax.jws.soap.SOAPBinding;
+import javax.swing.*;
 import java.awt.*;
 import java.io.*;
 import java.net.Socket;
@@ -21,6 +23,40 @@ public class ClientSocket implements Runnable {
     private Socket socket;
     public BufferedReader bufferedReader;
     public PrintWriter printWriter;
+    private JFrame jFrame;
+
+    public MessageWindow messageWindow;
+
+    public void setMessageWindow(MessageWindow messageWindow) {
+        this.messageWindow = messageWindow;
+    }
+
+    public MessageWindow getMessageWindow() {
+        return messageWindow;
+    }
+
+    public String getMostRecentIncomingMessage() {
+        return mostRecentIncomingMessage;
+    }
+
+    public void setMostRecentIncomingMessage(String mostRecentIncomingMessage) {
+        this.mostRecentIncomingMessage = mostRecentIncomingMessage;
+    }
+
+    public String getMostRecentOutgoingMessage() {
+
+        return mostRecentOutgoingMessage;
+    }
+
+    public void setMostRecentOutgoingMessage(String mostRecentOutgoingMessage) {
+        this.mostRecentOutgoingMessage = mostRecentOutgoingMessage;
+    }
+
+    private String mostRecentOutgoingMessage, mostRecentIncomingMessage;
+
+    public void giveWindow(JFrame jFrame) {
+        this.jFrame = jFrame;
+    }
 
     public PrintWriter getWriterToServer() {
         return printWriter;
@@ -54,19 +90,40 @@ public class ClientSocket implements Runnable {
                 Gson gson = new Gson();
                 if (incomingMessage.startsWith("{\"type\":\"SEND_MESSAGE")) {
                     MessageFormat messageFormat = gson.fromJson(incomingMessage, MessageFormat.class);
-                    //textAreaofChat.append(messageFormat().getSender(), messageFormat.getMessage() + "\n");
-                    //READ Server MessageFormat.
+                    //String html = "<html><font color='"+messageFormat.getColor()+"'>"+messageFormat.getSender() + "</font>";
+                    //String backToBlack = "<font color='black'>: </font></html>";
+                    //String format = html + backToBlack;
+                    String format = "<html>Text color: <font color='red'>red</font></html>";
+                    String total = format + messageFormat.getMessage() + "\n";
+                    getMessageWindow().appendText(total);
+                    //TODO:textAreaofChat.append(messageFormat().getSender(), messageFormat.getMessage() + "\n");
                 } else if(incomingMessage.startsWith("{\"type\":\"SUCCESSION")) {
                     Succession succession = gson.fromJson(incomingMessage, Succession.class);
-                    System.out.println("1");
+                    jFrame.setVisible(false);
                     if(succession.getSuccession() == RequestType.LOGIN) {
-                        System.out.println("2");
-                        new Login(false);
-                        new MessageWindow();
+                        User user = new User();
+                        LoginFormat loginFormat = gson.fromJson(getMostRecentOutgoingMessage(), LoginFormat.class);
+                        user.setEmail(loginFormat.getEmail());
+                        user.setUsername(loginFormat.getUsername());
+                        user.setPassword(loginFormat.getPassword());
+                        MessageWindow messageWindow = new MessageWindow();
+                        setMessageWindow(messageWindow);
+                        messageWindow.openWindow();
+                        messageWindow.setPrintWriter(printWriter);
+                        messageWindow.setUser(user);
+                        System.out.println(loginFormat.getEmail() + "\t" + loginFormat.getUsername() + "\t" + loginFormat.getPassword());
                     } else if(succession.getSuccession() == RequestType.CREATE_ACCOUNT) {
-                        System.out.println("3");
-                        new CreateAccount(false);
-                        new MessageWindow();
+                        MessageWindow messageWindow = new MessageWindow();
+                        messageWindow.openWindow();
+                        User user = new User();
+                        CreateAccountFormat loginFormat = gson.fromJson(getMostRecentOutgoingMessage(), CreateAccountFormat.class);
+                        user.setEmail(loginFormat.getEmail());
+                        user.setUsername(loginFormat.getUsername());
+                        user.setPassword(loginFormat.getPassword());
+                        messageWindow.setUser(user);
+                        setMessageWindow(messageWindow);
+                        System.out.println(loginFormat.getEmail() + "\t" + loginFormat.getUsername() + "\t" + loginFormat.getPassword());
+                        messageWindow.setPrintWriter(printWriter);
                     } else {
                         System.out.println(succession.getSuccession());
                         ErrorFormat errorFormat1 = new ErrorFormat(RequestType.ERROR, "You had an invalid succession type: " + succession.getSuccession().getName());
