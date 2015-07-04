@@ -16,7 +16,7 @@ public class MessageFormat {
     private String sender;
     private String message;
     private String jsonFormat;
-
+    //private String color;
     public MessageFormat(RequestType type, String sender, String message, String color) {
         this.type = type;
         this.sender = sender;
@@ -46,4 +46,6 @@ public class MessageFormat {
     }
 
     public String getJsonFormat() { return jsonFormat; }
+
+    //public String getColor() { return color; }
 }
