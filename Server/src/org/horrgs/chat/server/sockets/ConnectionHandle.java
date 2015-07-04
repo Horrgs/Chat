@@ -56,7 +56,9 @@ public class ConnectionHandle implements Runnable {
                 if (receivingMessage.startsWith("{\"type\":\"SEND_MESSAGE")) {
                     MessageFormat messageFormat = gson.fromJson(receivingMessage, MessageFormat.class);
                     User sender = UserManager.getInstance().getUser(messageFormat.getSender());
+                    System.out.println("send_message");
                     if(sender != null && sender.isAuthoized()) {
+                        System.out.println("sending.");
                         sendToAll(messageFormat.getSender(), messageFormat.getMessage(), sender.getColoredName());
                     }
                 } else if(receivingMessage.startsWith("{\"type\":\"LOGIN")) {
@@ -73,23 +75,22 @@ public class ConnectionHandle implements Runnable {
                     if(jsonObject != null) {
                         if(jsonObject.get(loginFormat.getEmail()).getAsJsonObject() != null) {
                             if (jsonObject.get(loginFormat.getEmail()).getAsJsonObject().get("username").getAsString().equals(loginFormat.getUsername()) && jsonObject.get(loginFormat.getEmail()).getAsJsonObject().get("password").getAsString().equals(loginFormat.getPassword())) {
-                                new UserManager(loginFormat.getUsername());
+                                new UserManager(loginFormat.getEmail());
                                 Succession succession = new Succession(RequestType.SUCCESSION, RequestType.LOGIN);
                                 PrintWriter printWriter = new PrintWriter(clientSocket.getOutputStream());
-                                System.out.println("okay!");
                                 printWriter.println(succession.getJsonFormat());
                                 printWriter.flush();
                             } else {
                                 ErrorFormat errorFormat = new ErrorFormat(RequestType.ERROR, "Incorrect email, username or password.");
                                 PrintWriter clientStream = new PrintWriter(clientSocket.getOutputStream());
                                 clientStream.println("{\"type\":\""+errorFormat.getRequestType().getName() + "\",\"message\":\""+errorFormat.getMessage()+"\"}");
-                                //TODO: I'd assume this would have to "flush" and "close".
+                                clientStream.flush();
                             }
                         } else {
                             ErrorFormat errorFormat = new ErrorFormat(RequestType.ERROR, "Incorrect email, username or password.");
                             PrintWriter clientStream = new PrintWriter(clientSocket.getOutputStream());
                             clientStream.println(errorFormat.getJsonFormat());
-                            //TODO: I'd assume this would have to "flush" and "close".
+                            clientStream.flush();
                         }
                     }
                 } else if(receivingMessage.startsWith("{\"type\":\"CREATE_ACCOUNT")) {
@@ -97,7 +98,6 @@ public class ConnectionHandle implements Runnable {
                     if(new UsernameParser().isUsernameTaken(createAccountFormat.getUsername())) {
                         ErrorFormat errorFormat = new ErrorFormat(RequestType.ERROR, "There is already an account with that username.");
                         PrintWriter printWriter = new PrintWriter(clientSocket.getOutputStream());
-                        System.out.println("2" + errorFormat.getMessage());
                         printWriter.println(errorFormat.getJsonFormat());
                         printWriter.flush();
                     }
@@ -114,6 +114,7 @@ public class ConnectionHandle implements Runnable {
                             UserManager.getInstance().writeNewUser(createAccountFormat);
                             Succession succession = new Succession(RequestType.SUCCESSION, RequestType.CREATE_ACCOUNT);
                             PrintWriter printWriter = new PrintWriter(clientSocket.getOutputStream());
+
                             printWriter.println(succession.getJsonFormat());
                             printWriter.flush();
                             System.out.println("Writing.");
@@ -164,6 +165,7 @@ public class ConnectionHandle implements Runnable {
 
     public void sendToAll(String sender, String message, String color) {
         MessageFormat messageFormat = new MessageFormat(RequestType.SEND_MESSAGE, sender, message, UserManager.getInstance().getUser(sender).getColoredName());
+        System.out.println("ythyt");
         sendToAll(messageFormat);
     }
 
@@ -173,9 +175,12 @@ public class ConnectionHandle implements Runnable {
     }
 
     public void sendToAll(MessageFormat messageFormat) {
-        Iterator it = clientOutputStreams.iterator();
+        Iterator it = ConnectionHandle.getInstance().clientOutputStreams.iterator();
+        System.out.println("dfdf");
+        System.out.println(ConnectionHandle.getInstance().clientOutputStreams.size());
         while(it.hasNext()) {
             try {
+                System.out.println("sendi.");
                 PrintWriter printWriter = (PrintWriter) it.next();
                 printWriter.println(messageFormat.getJsonFormat());
                 printWriter.flush();
