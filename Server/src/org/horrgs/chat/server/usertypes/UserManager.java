@@ -37,20 +37,8 @@ public class UserManager implements User {
             ex.printStackTrace();
         }
         boolean existsAlready = false;
-        if(jsonObject != null && email != null) {
-            if(jsonObject.get(email) != null && jsonObject.get(email).getAsJsonObject() != null) {
-                existsAlready = true;
-            } else {
-                System.out.println("T" + email);
-                if(jsonObject.get(email) == null) System.out.println("jsonObject.get(email) == null");
-                if(jsonObject.get(email).getAsJsonObject() == null) System.out.println("jsonObject.get(email).getAsJsonObject() == null");
-            }
-        } else {
-            if(jsonObject == null) System.out.println("jsonObject == null");
-            if(email == null) System.out.println("email == null");
-        }
+        if(jsonObject.has(email)) existsAlready = true;
         if(existsAlready) {
-            System.out.println("Ran 2");
             setUsername(jsonObject.get(email).getAsJsonObject().get("username").getAsString());
             setPassword(jsonObject.get(email).getAsJsonObject().get("password").getAsString());
             setAuthoized(true);
@@ -71,7 +59,6 @@ public class UserManager implements User {
                 setColoredName("red");
             }
         }
-        System.out.println("Ran#284y33824y");
         UserManager.getInstance().getUsersOnline().add(this);
     }
 
@@ -195,7 +182,6 @@ public class UserManager implements User {
         setUsername(createAccountFormat.getUsername());
         setEmail(createAccountFormat.getEmail());
         UserManager.getInstance().getUsersOnline().add(this);
-        System.out.println("Rakn34oherkberjkeb");
     }
 
     public List<User> usersOnline = new ArrayList<>();

@@ -24,8 +24,8 @@ public class ClientSocket implements Runnable {
     public BufferedReader bufferedReader;
     public PrintWriter printWriter;
     private JFrame jFrame;
-
     public MessageWindow messageWindow;
+    private String mostRecentOutgoingMessage;
 
     public void setMessageWindow(MessageWindow messageWindow) {
         this.messageWindow = messageWindow;
@@ -33,14 +33,6 @@ public class ClientSocket implements Runnable {
 
     public MessageWindow getMessageWindow() {
         return messageWindow;
-    }
-
-    public String getMostRecentIncomingMessage() {
-        return mostRecentIncomingMessage;
-    }
-
-    public void setMostRecentIncomingMessage(String mostRecentIncomingMessage) {
-        this.mostRecentIncomingMessage = mostRecentIncomingMessage;
     }
 
     public String getMostRecentOutgoingMessage() {
@@ -52,18 +44,8 @@ public class ClientSocket implements Runnable {
         this.mostRecentOutgoingMessage = mostRecentOutgoingMessage;
     }
 
-    private String mostRecentOutgoingMessage, mostRecentIncomingMessage;
-
     public void giveWindow(JFrame jFrame) {
         this.jFrame = jFrame;
-    }
-
-    public PrintWriter getWriterToServer() {
-        return printWriter;
-    }
-
-    public BufferedReader getReaderFromServer() {
-        return bufferedReader;
     }
 
     public void connect() {
@@ -111,7 +93,6 @@ public class ClientSocket implements Runnable {
                         messageWindow.openWindow();
                         messageWindow.setPrintWriter(printWriter);
                         messageWindow.setUser(user);
-                        System.out.println(loginFormat.getEmail() + "\t" + loginFormat.getUsername() + "\t" + loginFormat.getPassword());
                     } else if(succession.getSuccession() == RequestType.CREATE_ACCOUNT) {
                         MessageWindow messageWindow = new MessageWindow();
                         messageWindow.openWindow();
@@ -122,12 +103,10 @@ public class ClientSocket implements Runnable {
                         user.setPassword(loginFormat.getPassword());
                         messageWindow.setUser(user);
                         setMessageWindow(messageWindow);
-                        System.out.println(loginFormat.getEmail() + "\t" + loginFormat.getUsername() + "\t" + loginFormat.getPassword());
                         messageWindow.setPrintWriter(printWriter);
                     } else {
-                        System.out.println(succession.getSuccession());
                         ErrorFormat errorFormat1 = new ErrorFormat(RequestType.ERROR, "You had an invalid succession type: " + succession.getSuccession().getName());
-                        getWriterToServer().println(errorFormat1.getJsonFormat());
+                        printWriter.println(errorFormat1.getJsonFormat());
                     }
 
                 } else if(incomingMessage.startsWith("{\"type\":\"ERROR")) {
@@ -135,7 +114,7 @@ public class ClientSocket implements Runnable {
                     new Error(errorFormat.getMessage(), new Dimension(400, 400));
                 } else {
                     ErrorFormat errorFormat = new ErrorFormat(RequestType.ERROR, "A unknown REQUEST_TYPE has been sent to a client. Here is the message: " + incomingMessage);
-                    getWriterToServer().println("{\"type\":\""+errorFormat.getRequestType() + "\",\"message\":\""+incomingMessage+"\"}");
+                    printWriter.println("{\"type\":\""+errorFormat.getRequestType() + "\",\"message\":\""+incomingMessage+"\"}");
                 }
             }
         } catch (IOException ex) {

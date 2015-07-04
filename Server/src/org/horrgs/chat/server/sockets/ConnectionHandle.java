@@ -56,9 +56,7 @@ public class ConnectionHandle implements Runnable {
                 if (receivingMessage.startsWith("{\"type\":\"SEND_MESSAGE")) {
                     MessageFormat messageFormat = gson.fromJson(receivingMessage, MessageFormat.class);
                     User sender = UserManager.getInstance().getUser(messageFormat.getSender());
-                    System.out.println("send_message");
                     if(sender != null && sender.isAuthoized()) {
-                        System.out.println("sending.");
                         sendToAll(messageFormat.getSender(), messageFormat.getMessage(), sender.getColoredName());
                     }
                 } else if(receivingMessage.startsWith("{\"type\":\"LOGIN")) {
@@ -117,13 +115,11 @@ public class ConnectionHandle implements Runnable {
 
                             printWriter.println(succession.getJsonFormat());
                             printWriter.flush();
-                            System.out.println("Writing.");
                         } else {
                             if(clientSocket != null) {
                                 if(clientSocket.getOutputStream() != null) {
                                     PrintWriter printWriter = new PrintWriter(clientSocket.getOutputStream());
                                     ErrorFormat errorFormat = new ErrorFormat(RequestType.ERROR, "There is already an account with that email.");
-                                    System.out.println("1" + errorFormat.getMessage());
                                     printWriter.println(errorFormat.getJsonFormat());
                                     printWriter.flush();
                                     //TODO: I'd assume this would have to "flush" and "close".
@@ -165,7 +161,6 @@ public class ConnectionHandle implements Runnable {
 
     public void sendToAll(String sender, String message, String color) {
         MessageFormat messageFormat = new MessageFormat(RequestType.SEND_MESSAGE, sender, message, UserManager.getInstance().getUser(sender).getColoredName());
-        System.out.println("ythyt");
         sendToAll(messageFormat);
     }
 
@@ -176,11 +171,9 @@ public class ConnectionHandle implements Runnable {
 
     public void sendToAll(MessageFormat messageFormat) {
         Iterator it = ConnectionHandle.getInstance().clientOutputStreams.iterator();
-        System.out.println("dfdf");
         System.out.println(ConnectionHandle.getInstance().clientOutputStreams.size());
         while(it.hasNext()) {
             try {
-                System.out.println("sendi.");
                 PrintWriter printWriter = (PrintWriter) it.next();
                 printWriter.println(messageFormat.getJsonFormat());
                 printWriter.flush();

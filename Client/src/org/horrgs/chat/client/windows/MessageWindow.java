@@ -32,15 +32,6 @@ public class MessageWindow {
     public void setPrintWriter(PrintWriter printWriter) {
         this.printWriter = printWriter;
     }
-    /*
-    public PrintWriter getPrintWriter() {
-        return printWriter;
-    }
-
-    public User getUser() {
-        return user;
-    }  */
-
     public void setUser(User user) {
         this.user = user;
     }
