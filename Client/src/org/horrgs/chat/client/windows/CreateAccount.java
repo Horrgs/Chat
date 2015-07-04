@@ -19,10 +19,6 @@ public class CreateAccount extends JFrame {
     private JPasswordField confirmJPasswordField;
     private JButton createAccount, exit;
 
-    public CreateAccount(boolean window) {
-        setVisible(window);
-    }
-
 
     public CreateAccount() {
         setSize(600, 400);
@@ -121,6 +117,7 @@ public class CreateAccount extends JFrame {
                 CreateAccountFormat createAccountFormat = new CreateAccountFormat(RequestType.CREATE_ACCOUNT, email.getText(), username.getText(), stringPass);
                 clientSocket.printWriter.println("{\"type\":\""+createAccountFormat.getType().getName() + "\",\"email\":\""+createAccountFormat.getEmail()+"\",\"username\":\""+createAccountFormat.getUsername()+"\",\"password\":\""+createAccountFormat.getPassword() + "\"}");
                 clientSocket.printWriter.flush();
+                clientSocket.setMostRecentOutgoingMessage(createAccountFormat.getJsonFormat());
                 //TODO: check if all fields are "eligible" meaning email is proper format, password is good, etc,.
             } else if(ev.getSource() == exit) {
                 setVisible(false);
