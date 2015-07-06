@@ -5,6 +5,7 @@ import org.horrgs.chat.client.types.RequestType;
 import org.horrgs.chat.client.types.Succession;
 import org.horrgs.chat.client.types.outgoing.CreateAccountFormat;
 import org.horrgs.chat.client.types.outgoing.LoginFormat;
+import org.horrgs.chat.client.users.User;
 import org.horrgs.chat.client.windows.*;
 import org.horrgs.chat.client.types.ErrorFormat;
 import org.horrgs.chat.client.types.MessageFormat;
@@ -20,7 +21,7 @@ import java.net.Socket;
  * Created by Horrgs on 5/16/2015.
  */
 public class ClientSocket implements Runnable {
-    Console console = new Console();
+    Console console = new Console().getInstance();
     private Socket socket;
     public BufferedReader bufferedReader;
     public PrintWriter printWriter;
@@ -51,7 +52,7 @@ public class ClientSocket implements Runnable {
 
     public void connect() {
         try {
-            socket = new Socket("192.168.0.7", 5000);
+            socket = new Socket("127.0.0.1", 5000);
             InputStreamReader inputStreamReader = new InputStreamReader(socket.getInputStream());
             bufferedReader = new BufferedReader(inputStreamReader);
             printWriter = new PrintWriter(socket.getOutputStream());
@@ -74,16 +75,15 @@ public class ClientSocket implements Runnable {
                 if (incomingMessage.startsWith("{\"type\":\"SEND_MESSAGE")) {
                     MessageFormat messageFormat = gson.fromJson(incomingMessage, MessageFormat.class);
                     getMessageWindow().appendText(messageFormat);
-                    //TODO:textAreaofChat.append(messageFormat().getSender(), messageFormat.getMessage() + "\n");
                 } else if(incomingMessage.startsWith("{\"type\":\"SUCCESSION")) {
                     Succession succession = gson.fromJson(incomingMessage, Succession.class);
                     jFrame.setVisible(false);
+                    User user = new User();
+                    user.setRank(succession.getRank());
                     if(succession.getSuccession() == RequestType.LOGIN) {
-                        User user = new User();
                         LoginFormat loginFormat = gson.fromJson(getMostRecentOutgoingMessage(), LoginFormat.class);
                         user.setEmail(loginFormat.getEmail());
                         user.setUsername(loginFormat.getUsername());
-                        user.setPassword(loginFormat.getPassword());
                         MessageWindow messageWindow = new MessageWindow();
                         setMessageWindow(messageWindow);
                         messageWindow.openWindow();
@@ -92,7 +92,6 @@ public class ClientSocket implements Runnable {
                     } else if(succession.getSuccession() == RequestType.CREATE_ACCOUNT) {
                         MessageWindow messageWindow = new MessageWindow();
                         messageWindow.openWindow();
-                        User user = new User();
                         CreateAccountFormat loginFormat = gson.fromJson(getMostRecentOutgoingMessage(), CreateAccountFormat.class);
                         user.setEmail(loginFormat.getEmail());
                         user.setUsername(loginFormat.getUsername());
