@@ -50,6 +50,7 @@ public class ConnectionHandle implements Runnable {
     public void run() {
         String receivingMessage;
         try {
+            //TODO: need to add usernames to usernames.txt
             while((receivingMessage = bufferedReader.readLine()) != null) {
                 System.out.println(receivingMessage);
                 Gson gson = new Gson();
@@ -171,7 +172,6 @@ public class ConnectionHandle implements Runnable {
 
     public void sendToAll(MessageFormat messageFormat) {
         Iterator it = ConnectionHandle.getInstance().clientOutputStreams.iterator();
-        System.out.println(ConnectionHandle.getInstance().clientOutputStreams.size());
         while(it.hasNext()) {
             try {
                 PrintWriter printWriter = (PrintWriter) it.next();
