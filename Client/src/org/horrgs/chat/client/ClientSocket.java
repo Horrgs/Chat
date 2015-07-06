@@ -72,12 +72,7 @@ public class ClientSocket implements Runnable {
                 Gson gson = new Gson();
                 if (incomingMessage.startsWith("{\"type\":\"SEND_MESSAGE")) {
                     MessageFormat messageFormat = gson.fromJson(incomingMessage, MessageFormat.class);
-                    //String html = "<html><font color='"+messageFormat.getColor()+"'>"+messageFormat.getSender() + "</font>";
-                    //String backToBlack = "<font color='black'>: </font></html>";
-                    //String format = html + backToBlack;
-                    String format = "<html>Text color: <font color='red'>red</font></html>";
-                    String total = format + messageFormat.getMessage() + "\n";
-                    getMessageWindow().appendText(total);
+                    getMessageWindow().appendText(messageFormat);
                     //TODO:textAreaofChat.append(messageFormat().getSender(), messageFormat.getMessage() + "\n");
                 } else if(incomingMessage.startsWith("{\"type\":\"SUCCESSION")) {
                     Succession succession = gson.fromJson(incomingMessage, Succession.class);
