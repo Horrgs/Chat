@@ -1,5 +1,6 @@
 package org.horrgs.chat.client;
 
+import org.horrgs.chat.client.windows.Console;
 import org.horrgs.chat.client.windows.MainMenu;
 
 /**
@@ -8,6 +9,7 @@ import org.horrgs.chat.client.windows.MainMenu;
 public class Chat {
 
     public static void main(String[] args) {
+        new Console().openWindow();
         new MainMenu();
     }
 }
