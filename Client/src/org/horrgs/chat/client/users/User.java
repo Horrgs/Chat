@@ -1,10 +1,11 @@
-package org.horrgs.chat.client.windows;
+package org.horrgs.chat.client.users;
 
 /**
  * Created by Horrgs on 7/1/2015.
  */
 public class User {
     private String email,username,password;
+    private RankManager.Rank rank;
 
     public String getEmail() {
         return email;
@@ -28,5 +29,13 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public RankManager.Rank getRank() {
+        return rank;
+    }
+
+    public void setRank(RankManager.Rank rank) {
+        this.rank = rank;
     }
 }
