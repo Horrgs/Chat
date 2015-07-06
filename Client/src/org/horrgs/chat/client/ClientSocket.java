@@ -8,9 +8,9 @@ import org.horrgs.chat.client.types.outgoing.LoginFormat;
 import org.horrgs.chat.client.windows.*;
 import org.horrgs.chat.client.types.ErrorFormat;
 import org.horrgs.chat.client.types.MessageFormat;
+import org.horrgs.chat.client.windows.Console;
 import org.horrgs.chat.client.windows.Error;
 
-import javax.jws.soap.SOAPBinding;
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
@@ -20,6 +20,7 @@ import java.net.Socket;
  * Created by Horrgs on 5/16/2015.
  */
 public class ClientSocket implements Runnable {
+    Console console = new Console();
     private Socket socket;
     public BufferedReader bufferedReader;
     public PrintWriter printWriter;
@@ -50,16 +51,16 @@ public class ClientSocket implements Runnable {
 
     public void connect() {
         try {
-            socket = new Socket("127.0.0.1", 5000);
+            socket = new Socket("192.168.0.7", 5000);
             InputStreamReader inputStreamReader = new InputStreamReader(socket.getInputStream());
             bufferedReader = new BufferedReader(inputStreamReader);
             printWriter = new PrintWriter(socket.getOutputStream());
-            System.out.println("Connection established.");
+            console.appendConsole("Connection established.");
             Thread readerAndRunner = new Thread(this);
             readerAndRunner.start();
         } catch (IOException ex) {
             ex.printStackTrace();
-            System.out.println("Issues connecting to 127.0.0.1 on port 5000");
+            console.appendConsole("Issues connecting to 127.0.0.1 on port 5000");
         }
     }
 
@@ -68,7 +69,7 @@ public class ClientSocket implements Runnable {
         String incomingMessage;
         try {
             while((incomingMessage = bufferedReader.readLine()) != null) {
-                System.out.println(incomingMessage);
+                console.appendConsole(incomingMessage);
                 Gson gson = new Gson();
                 if (incomingMessage.startsWith("{\"type\":\"SEND_MESSAGE")) {
                     MessageFormat messageFormat = gson.fromJson(incomingMessage, MessageFormat.class);
