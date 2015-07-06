@@ -35,7 +35,7 @@ public class Login extends JFrame {
         gbc.gridy = 0;
         jFrame.add(hintEmail, gbc);
 
-        email = new JTextField("horrgs34@gmail.com", 15);
+        email = new JTextField("", 15);
         gbc.gridx = 1;
         jFrame.add(email, gbc);
 
@@ -47,7 +47,7 @@ public class Login extends JFrame {
         gbc.gridy = 1;
         jFrame.add(hintUsername, gbc);
 
-        username = new JTextField("Horrgs", 15);
+        username = new JTextField("", 15);
         gbc.gridx = 1;
         jFrame.add(username, gbc);
 
@@ -59,7 +59,7 @@ public class Login extends JFrame {
         gbc.gridy = 2;
         jFrame.add(hintPassword, gbc);
 
-        password = new JPasswordField("Mattiscool12?", 15);
+        password = new JPasswordField("", 15);
         gbc.gridx = 1;
         jFrame.add(password, gbc);
 
