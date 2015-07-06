@@ -7,11 +7,13 @@ import java.awt.*;
  * Created by Horrgs on 7/5/2015.
  */
 public class Console {
+    private static Console instance = new Console();
+    public static Console getInstance() { return instance; }
     public JFrame jFrame;
     public JTextArea jTextArea = new JTextArea();
 
     public void appendConsole(String message) {
-        jTextArea.append("\n" + message);
+        jTextArea.append(message + "\n");
     }
 
     public void openWindow() {
