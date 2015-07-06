@@ -1,5 +1,6 @@
 package org.horrgs.chat.server.types;
 
+import org.horrgs.chat.server.usertypes.RankManager;
 import org.horrgs.chat.server.usertypes.User;
 
 import java.awt.*;
@@ -13,13 +14,15 @@ import java.awt.*;
  */
 public class MessageFormat {
     private RequestType type;
+    private RankManager.Rank rank;
     private String sender;
     private String message;
     private String jsonFormat;
     //private String color;
     //TODO: maybe include rank name for the messageArea on client.
-    public MessageFormat(RequestType type, String sender, String message, String color) {
+    public MessageFormat(RequestType type, RankManager.Rank rank, String sender, String message, String color) {
         this.type = type;
+        this.rank = rank;
         this.sender = sender;
         this.message = message;
         this.jsonFormat = "{\"type\":\"" + type.getName() + "\",\"sender\":\"" + sender + "\",\"message\":\""+message+"\",\"color\":\"" + color + "\"}";
@@ -37,6 +40,8 @@ public class MessageFormat {
         }
         return "";
     }
+
+    public RankManager.Rank getRank() { return rank; }
 
     public String getSender() {
         return sender;
