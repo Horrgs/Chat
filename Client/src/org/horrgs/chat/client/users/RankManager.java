@@ -1,4 +1,4 @@
-package org.horrgs.chat.server.usertypes;
+package org.horrgs.chat.client.users;
 
 /**
  * Created by Horrgs on 5/14/2015.
