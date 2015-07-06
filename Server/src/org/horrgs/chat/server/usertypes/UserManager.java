@@ -202,4 +202,9 @@ public class UserManager implements User {
         }
         return null;
     }
+
+    public User getOfflineUser(String email) {
+        //TODO: parse json.
+        return null;
+    }
 }
