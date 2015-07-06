@@ -1,5 +1,6 @@
 package org.horrgs.chat.server;
 
+import org.horrgs.chat.server.sockets.ConnectionHandle;
 import org.horrgs.chat.server.windows.Console;
 import org.horrgs.chat.server.windows.Window;
 
@@ -9,8 +10,8 @@ import org.horrgs.chat.server.windows.Window;
 public class Chat {
     public static void main(String[] args) throws InterruptedException {
         new FileManager().setup();
-        new Window();
-        new Console().openWindow();
+        Console.getInstance().openWindow();
+        new ConnectionHandle().start();
         new UsernameParser().parse();
     }
 }

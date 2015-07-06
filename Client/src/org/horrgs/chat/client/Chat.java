@@ -9,7 +9,7 @@ import org.horrgs.chat.client.windows.MainMenu;
 public class Chat {
 
     public static void main(String[] args) {
-        new Console().openWindow();
+        new Console().getInstance().openWindow();
         new MainMenu();
     }
 }
