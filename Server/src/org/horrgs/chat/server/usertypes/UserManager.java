@@ -51,12 +51,11 @@ public class UserManager implements User {
             setRank(rank);
             setEmail(jsonObject.get(email).getAsJsonObject().get("email").getAsString());
             if(rank == RankManager.Rank.USER) {
-                setColoredName("black");
+                setColoredName("#000000");
             } else if(rank == RankManager.Rank.MODERATOR) {
-                //TODO: should be a light green
-                setColoredName("green");
+                setColoredName("#47D147");
             } else if(rank == RankManager.Rank.ADMINISTRATOR) {
-                setColoredName("red");
+                setColoredName("#B20000");
             }
         }
         UserManager.getInstance().getUsersOnline().add(this);
