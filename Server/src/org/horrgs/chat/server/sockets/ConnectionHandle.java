@@ -12,6 +12,7 @@ import org.horrgs.chat.server.types.MessageFormat;
 import org.horrgs.chat.server.types.outgoing.ErrorFormat;
 import org.horrgs.chat.server.usertypes.User;
 import org.horrgs.chat.server.usertypes.UserManager;
+import org.horrgs.chat.server.windows.Console;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -24,6 +25,7 @@ import java.util.logging.Logger;
  * Created by Horrgs on 5/16/2015.
  */
 public class ConnectionHandle implements Runnable {
+    org.horrgs.chat.server.windows.Console console = new Console();
     private BufferedReader bufferedReader;
     private Socket clientSocket;
     private static ConnectionHandle instance = new ConnectionHandle();
@@ -52,7 +54,7 @@ public class ConnectionHandle implements Runnable {
         try {
             //TODO: need to add usernames to usernames.txt
             while((receivingMessage = bufferedReader.readLine()) != null) {
-                System.out.println(receivingMessage);
+                console.appendConsole(receivingMessage);
                 Gson gson = new Gson();
                 if (receivingMessage.startsWith("{\"type\":\"SEND_MESSAGE")) {
                     MessageFormat messageFormat = gson.fromJson(receivingMessage, MessageFormat.class);
@@ -125,14 +127,14 @@ public class ConnectionHandle implements Runnable {
                                     printWriter.flush();
                                     //TODO: I'd assume this would have to "flush" and "close".
                                 } else {
-                                    System.out.println("clientSocket.getOutputStream == null");
+                                    console.appendConsole("clientSocket.getOutputStream == null");
                                 }
                             } else {
-                                System.out.println("clientSocket == null");
+                                console.appendConsole("clientSocket == null");
                             }
                         }
                     } else {
-                        System.out.println("jsonObject == null");
+                        console.appendConsole("jsonObject == null");
                     }
                 } else if(receivingMessage.startsWith("{\"type\":\"ERROR")) {
                     ErrorFormat errorFormat = gson.fromJson(receivingMessage, ErrorFormat.class);
@@ -148,6 +150,7 @@ public class ConnectionHandle implements Runnable {
     public void start() {
         try {
             ServerSocket serverSocket = new ServerSocket(5000);
+            console.appendConsole("Starting....");
             while(true) {
                 Socket client = serverSocket.accept();
                 PrintWriter printWriter = new PrintWriter(client.getOutputStream());
