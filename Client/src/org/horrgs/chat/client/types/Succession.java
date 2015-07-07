@@ -1,15 +1,15 @@
 package org.horrgs.chat.client.types;
 
-import org.horrgs.chat.client.users.RankManager;
+import org.horrgs.chat.client.users.Rank;
 
 /**
  * Created by Horrgs on 7/2/2015.
  */
 public class Succession {
     private RequestType requestType, succession;
-    private RankManager.Rank rank;
+    private Rank rank;
     private String jsonFormat;
-    public Succession(RequestType requestType, RequestType succession, RankManager.Rank rank) {
+    public Succession(RequestType requestType, RequestType succession, Rank rank) {
         this.requestType = requestType;
         this.succession = succession;
         this.rank = rank;
@@ -20,7 +20,7 @@ public class Succession {
         return requestType;
     }
 
-    public RankManager.Rank getRank() {
+    public Rank getRank() {
         return rank;
     }
 

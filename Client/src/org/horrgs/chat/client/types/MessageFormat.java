@@ -1,6 +1,6 @@
 package org.horrgs.chat.client.types;
 
-import org.horrgs.chat.client.users.RankManager;
+import org.horrgs.chat.client.users.Rank;
 import org.horrgs.chat.client.windows.MessageWindow;
 
 /**
@@ -12,13 +12,13 @@ import org.horrgs.chat.client.windows.MessageWindow;
  */
 public class MessageFormat {
     private RequestType type;
-    private RankManager.Rank rank;
+    private Rank rank;
     private String sender;
     private String message;
     private String jsonFormat;
     private String color;
 
-    public MessageFormat(RequestType type, RankManager.Rank rank, String sender, String message, String color) {
+    public MessageFormat(RequestType type, Rank rank, String sender, String message, String color) {
         this.type = type;
         this.rank = rank;
         this.sender = sender;
@@ -34,7 +34,7 @@ public class MessageFormat {
         return "";
     }
 
-    public RankManager.Rank getRank() {
+    public Rank getRank() {
         return rank;
     }
 

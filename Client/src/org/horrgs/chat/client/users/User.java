@@ -5,7 +5,7 @@ package org.horrgs.chat.client.users;
  */
 public class User {
     private String email,username,password;
-    private RankManager.Rank rank;
+    private Rank rank;
 
     public String getEmail() {
         return email;
@@ -31,11 +31,11 @@ public class User {
         this.password = password;
     }
 
-    public RankManager.Rank getRank() {
+    public Rank getRank() {
         return rank;
     }
 
-    public void setRank(RankManager.Rank rank) {
+    public void setRank(Rank rank) {
         this.rank = rank;
     }
 }
