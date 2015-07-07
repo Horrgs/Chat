@@ -13,9 +13,9 @@ import java.awt.event.ActionListener;
 /**
  * Created by Horrgs on 7/1/2015.
  */
-public class Login extends JFrame {
+public class Login {
     public JFrame jFrame = new JFrame();
-    public JTextField hintEmail, hintUsername, hintPassword, email, username;
+    public JTextField hintUsername, hintPassword, email, username;
     public JPasswordField password;
     public JButton login, returnB;
     
@@ -24,41 +24,12 @@ public class Login extends JFrame {
         GridBagConstraints gbc = new GridBagConstraints();
         jFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         jFrame.setTitle("Chat - Login");
-        //TODO: for future, make a method for hints that set all the info for it like not editable, etc,. Did this before in some project, look back.
-        //https://github.com/Horrgs/Agenda/blob/master/src/org/horrgs/agenda/windows/SignUp.java#L50-L65
-        hintEmail = new JTextField("Email: ");
         jFrame.setSize(400, 400);
-        hintEmail.setEditable(false);
-        hintEmail.setBackground(jFrame.getBackground());
-        hintEmail.setBorder(BorderFactory.createLineBorder(jFrame.getBackground()));
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        jFrame.add(hintEmail, gbc);
-
-        email = new JTextField("", 15);
-        gbc.gridx = 1;
-        jFrame.add(email, gbc);
-
-        hintUsername = new JTextField("Username: ");
-        hintUsername.setEditable(false);
-        hintUsername.setBackground(jFrame.getBackground());
-        hintUsername.setBorder(BorderFactory.createLineBorder(jFrame.getBackground()));
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        jFrame.add(hintUsername, gbc);
-
-        username = new JTextField("", 15);
-        gbc.gridx = 1;
-        jFrame.add(username, gbc);
-
-        hintPassword = new JTextField("Password: ");
-        hintPassword.setEditable(false);
-        hintPassword.setBackground(jFrame.getBackground());
-        hintPassword.setBorder(BorderFactory.createLineBorder(jFrame.getBackground()));
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        jFrame.add(hintPassword, gbc);
-
+        addComp(new JTextField("Email: "), 0, 0, false);
+        addComp(email = new JTextField("", 15), 1, 0, true);
+        addComp(new JTextField("Username: "), 0, 1, false);
+        addComp(username = new JTextField("", 15), 1, 1, true);
+        addComp(new JTextField("Password: "), 0, 2, false);
         password = new JPasswordField("", 15);
         gbc.gridx = 1;
         jFrame.add(password, gbc);
@@ -76,6 +47,18 @@ public class Login extends JFrame {
         returnB.addActionListener(new LoginListener());
         jFrame.add(returnB, gbc);
         jFrame.setVisible(true);
+    }
+
+    public void addComp(JTextField jTextField, int x, int y, boolean editable) {
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = x;
+        gbc.gridy = y;
+        jTextField.setEditable(editable);
+        if(!editable) {
+            jTextField.setBackground(jFrame.getBackground());
+            jTextField.setBorder(BorderFactory.createLineBorder(jFrame.getBackground()));
+        }
+        jFrame.add(jTextField, gbc);
     }
 
     private class LoginListener implements ActionListener {
