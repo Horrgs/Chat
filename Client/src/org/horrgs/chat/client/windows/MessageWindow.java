@@ -3,7 +3,8 @@ package org.horrgs.chat.client.windows;
 import org.horrgs.chat.client.ClientSocket;
 import org.horrgs.chat.client.types.MessageFormat;
 import org.horrgs.chat.client.types.RequestType;
-import org.horrgs.chat.client.users.RankManager;
+import org.horrgs.chat.client.users.Rank;
+import org.horrgs.chat.client.users.Rank;
 import org.horrgs.chat.client.users.User;
 
 import javax.swing.*;
@@ -19,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by Horrgs on 7/1/2015.
  */
-public class MessageWindow implements Runnable {
+public class MessageWindow /*implements Runnable */ {
     private JFrame jFrame = new JFrame();
     private JButton sendMessage;
     public JTextArea composeMessage;
@@ -30,9 +31,9 @@ public class MessageWindow implements Runnable {
 
     public static Color hex2Rgb(String colorStr) {
         return new Color(
-                Integer.valueOf( colorStr.substring( 1, 3 ), 16 ),
-                Integer.valueOf( colorStr.substring( 3, 5 ), 16 ),
-                Integer.valueOf( colorStr.substring( 5, 7 ), 16 ) );
+                Integer.valueOf(colorStr.substring(1, 3), 16),
+                Integer.valueOf(colorStr.substring(3, 5), 16),
+                Integer.valueOf(colorStr.substring(5, 7), 16));
     }
 
     public void appendText(MessageFormat messageFormat) {
@@ -60,7 +61,7 @@ public class MessageWindow implements Runnable {
 
         try {
             styledDocument.insertString(styledDocument.getLength(), "[", brackets);
-            styledDocument.insertString(styledDocument.getLength(), messageFormat.getRank().getId(), rank);
+            styledDocument.insertString(styledDocument.getLength(), messageFormat.getRank().getName(), rank);
             styledDocument.insertString(styledDocument.getLength(), "] ", brackets);
             styledDocument.insertString(styledDocument.getLength(), messageFormat.getSender(), sender);
             styledDocument.insertString(styledDocument.getLength(), ": " + messageFormat.getMessage() + "\n", rest);
@@ -73,6 +74,7 @@ public class MessageWindow implements Runnable {
     public void setPrintWriter(PrintWriter printWriter) {
         this.printWriter = printWriter;
     }
+
     public void setUser(User user) {
         this.user = user;
     }
@@ -117,7 +119,7 @@ public class MessageWindow implements Runnable {
         jFrame.add(sendMessage, gbc);
         jFrame.setVisible(true);
     }
-
+    /*
     int seconds = 5;
     public void setSeconds(int seconds) {
         this.seconds = seconds;
@@ -132,28 +134,29 @@ public class MessageWindow implements Runnable {
         if(getSeconds() <= 0) {
             setSeconds(getSeconds() - 1);
         }
-    }
+    }  */
 
     private class SendMessage implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent ev) {
-            if(ev.getSource() == sendMessage) {
-                if(getSeconds() != 0 && user.getRank() != RankManager.Rank.ADMINISTRATOR) {
-                    if(composeMessage.getText().length() >= 10) {
-                        MessageFormat messageFormat = new MessageFormat(RequestType.SEND_MESSAGE, RankManager.Rank.USER, user.getUsername(),  composeMessage.getText(), "null");
-                        printWriter.println(messageFormat.getJsonFormat());
-                        composeMessage.setText("");
-                        printWriter.flush();
-                        ClientSocket clientSocket = new ClientSocket();
-                        clientSocket.setMostRecentOutgoingMessage(messageFormat.getJsonFormat());
-                        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
-                        scheduledExecutorService.scheduleAtFixedRate(new MessageWindow(), 0, 1, TimeUnit.SECONDS);
-                    } else {
-                        new Error("Message is too short, must be a total of 10 characters. You have " + composeMessage.getText().length()  + ".", new Dimension(400, 400));
-                    }
+            if (ev.getSource() == sendMessage) {
+                System.out.println(user.getRank());
+                /*if (getSeconds() != 0 && user.getRank() != Rank.ADMINISTRATOR) {   */
+                if (composeMessage.getText().length() >= 10) {
+                    MessageFormat messageFormat = new MessageFormat(RequestType.SEND_MESSAGE, Rank.USER, user.getUsername(), composeMessage.getText(), "null");
+                    printWriter.println(messageFormat.getJsonFormat());
+                    composeMessage.setText("");
+                    printWriter.flush();
+                    ClientSocket clientSocket = new ClientSocket();
+                    clientSocket.setMostRecentOutgoingMessage(messageFormat.getJsonFormat());
+                    //setSeconds(5);
+                    //ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
+                    //scheduledExecutorService.scheduleAtFixedRate(new MessageWindow(), 0, 1, TimeUnit.SECONDS);
                 } else {
-                    new Error("Your chat cooldown has not ended yet, you still have " + getSeconds() + " second(s) left.", new Dimension(400, 400));
+                    new Error("Message is too short, must be a total of 10 characters. You have " + composeMessage.getText().length() + ".", new Dimension(400, 400));
                 }
+            } else {
+                //new Error("Your chat cooldown has not ended yet, you still have " + getSeconds() + " second(s) left.", new Dimension(400, 400));
             }
         }
     }
