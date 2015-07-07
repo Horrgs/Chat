@@ -10,7 +10,7 @@ import org.horrgs.chat.server.types.incoming.CreateAccountFormat;
 import org.horrgs.chat.server.types.incoming.LoginFormat;
 import org.horrgs.chat.server.types.MessageFormat;
 import org.horrgs.chat.server.types.outgoing.ErrorFormat;
-import org.horrgs.chat.server.usertypes.RankManager;
+import org.horrgs.chat.server.usertypes.Rank;
 import org.horrgs.chat.server.usertypes.User;
 import org.horrgs.chat.server.usertypes.UserManager;
 import org.horrgs.chat.server.windows.Console;
@@ -76,13 +76,22 @@ public class ConnectionHandle implements Runnable {
 
                     if(jsonObject != null) {
                         if(jsonObject.get(loginFormat.getEmail()).getAsJsonObject() != null) {
+                            System.out.println("T");
                             if (jsonObject.get(loginFormat.getEmail()).getAsJsonObject().get("username").getAsString().equals(loginFormat.getUsername()) && jsonObject.get(loginFormat.getEmail()).getAsJsonObject().get("password").getAsString().equals(loginFormat.getPassword())) {
                                 new UserManager(loginFormat.getEmail());
                                 User user = UserManager.getInstance().getUser(loginFormat.getUsername());
-                                Succession succession = new Succession(RequestType.SUCCESSION, RequestType.LOGIN, user.getRank());
-                                PrintWriter printWriter = new PrintWriter(clientSocket.getOutputStream());
-                                printWriter.println(succession.getJsonFormat());
-                                printWriter.flush();
+                                if(user != null) {
+                                    if(user.getRank() != null) {
+                                        Succession succession = new Succession(RequestType.SUCCESSION, RequestType.LOGIN, user.getRank());
+                                        PrintWriter printWriter = new PrintWriter(clientSocket.getOutputStream());
+                                        printWriter.println(succession.getJsonFormat());
+                                        printWriter.flush();
+                                    } else {
+                                        System.out.println("RR");
+                                    }
+                                } else {
+                                    System.out.println("PP");
+                                }
                             } else {
                                 ErrorFormat errorFormat = new ErrorFormat(RequestType.ERROR, "Incorrect email, username or password.");
                                 PrintWriter clientStream = new PrintWriter(clientSocket.getOutputStream());
@@ -115,7 +124,7 @@ public class ConnectionHandle implements Runnable {
                     if(jsonObject != null) {
                         if(jsonObject.get(createAccountFormat.getEmail()) == null) {
                             UserManager.getInstance().writeNewUser(createAccountFormat);
-                            Succession succession = new Succession(RequestType.SUCCESSION, RequestType.CREATE_ACCOUNT, RankManager.Rank.USER);
+                            Succession succession = new Succession(RequestType.SUCCESSION, RequestType.CREATE_ACCOUNT, Rank.USER);
                             PrintWriter printWriter = new PrintWriter(clientSocket.getOutputStream());
 
                             printWriter.println(succession.getJsonFormat());

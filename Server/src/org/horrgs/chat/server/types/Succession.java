@@ -1,6 +1,6 @@
 package org.horrgs.chat.server.types;
 
-import org.horrgs.chat.server.usertypes.RankManager;
+import org.horrgs.chat.server.usertypes.Rank;
 
 /**
  * Created by Horrgs on 7/2/2015.
@@ -8,12 +8,12 @@ import org.horrgs.chat.server.usertypes.RankManager;
 public class Succession {
     private RequestType requestType, succession;
     private String jsonFormat;
-    private RankManager.Rank rank;
-    public Succession(RequestType requestType, RequestType succession, RankManager.Rank rank) {
+    private Rank rank;
+    public Succession(RequestType requestType, RequestType succession, Rank rank) {
         this.requestType = requestType;
         this.succession = succession;
         this.rank = rank;
-        this.jsonFormat = "{\"type\":\"" + requestType.getName() + "\",\"succession\":\""+succession.getName()+"\",\"rank\":\"" + rank.getId() + "\"}";
+        this.jsonFormat = "{\"type\":\"" + requestType.getName() + "\",\"succession\":\""+succession.getName()+"\",\"rank\":\"" + rank.getName() + "\"}";
     }
 
     public RequestType getRequestType() {
@@ -24,7 +24,7 @@ public class Succession {
         return succession;
     }
 
-    public RankManager.Rank getRank() { return rank; }
+    public Rank getRank() { return rank; }
 
     public String getJsonFormat() { return jsonFormat; }
 }

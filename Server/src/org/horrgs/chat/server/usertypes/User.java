@@ -7,7 +7,7 @@ public interface User {
 
     public String getUsername();
 
-    public RankManager.Rank getRank();
+    public Rank getRank();
 
     public Status getStatus();
 
@@ -23,7 +23,7 @@ public interface User {
 
     public void setUsername(String string);
 
-    public void setRank(RankManager.Rank rank);
+    public void setRank(Rank rank);
 
     public void setStatus(Status status);
 
