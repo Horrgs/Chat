@@ -15,7 +15,7 @@ public class UserManager implements User {
     private static UserManager instance = new UserManager();
     public static UserManager getInstance() { return instance; }
     private String username;
-    private RankManager.Rank rank;
+    private Rank rank;
     private Status status;
     private String mostRecentMessage;
     private String password;
@@ -46,15 +46,15 @@ public class UserManager implements User {
             Status status = Status.OFFLINE;
             status = status.getById(jsonObject.get(email).getAsJsonObject().get("status").getAsString());
             setStatus(status);
-            RankManager.Rank rank = RankManager.Rank.USER;
-            rank = rank.getById(jsonObject.get(email).getAsJsonObject().get("rank").getAsString());
+            Rank rank = Rank.USER;
+            rank = rank.getByName(jsonObject.get(email).getAsJsonObject().get("rank").getAsString());
             setRank(rank);
             setEmail(jsonObject.get(email).getAsJsonObject().get("email").getAsString());
-            if(rank == RankManager.Rank.USER) {
+            if(rank == Rank.USER) {
                 setColoredName("#000000");
-            } else if(rank == RankManager.Rank.MODERATOR) {
+            } else if(rank == Rank.MODERATOR) {
                 setColoredName("#47D147");
-            } else if(rank == RankManager.Rank.ADMINISTRATOR) {
+            } else if(rank == Rank.ADMINISTRATOR) {
                 setColoredName("#B20000");
             }
         }
@@ -67,7 +67,7 @@ public class UserManager implements User {
     }
 
     @Override
-    public RankManager.Rank getRank() {
+    public Rank getRank() {
         return rank;
     }
 
@@ -107,7 +107,7 @@ public class UserManager implements User {
     }
 
     @Override
-    public void setRank(RankManager.Rank rank) {
+    public void setRank(Rank rank) {
         this.rank = rank;
     }
 
@@ -165,7 +165,7 @@ public class UserManager implements User {
             email.addProperty("password", createAccountFormat.getPassword());
             email.addProperty("most_recent_message", "Hello, I am " + createAccountFormat.getUsername() + "!");
             email.addProperty("status", Status.ONLINE.getId());
-            email.addProperty("rank", RankManager.Rank.USER.getId());
+            email.addProperty("rank", Rank.USER.getName());
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("users.json"));
             bufferedWriter.write(jsonObject.toString());
             bufferedWriter.flush();
@@ -173,7 +173,7 @@ public class UserManager implements User {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-        setRank(RankManager.Rank.USER);
+        setRank(Rank.USER);
         setMostRecentMessage("");
         setAuthoized(true);
         setStatus(Status.ONLINE);
@@ -191,7 +191,7 @@ public class UserManager implements User {
 
     public User getUser(String username) {
         //WORKS
-        for(User user : getUsersOnline()) {
+        for(User user : UserManager.getInstance().getUsersOnline()) {
             if(user.getUsername() != null) {
                 if (user.getUsername().equals(username)) {
                     return user;
