@@ -19,7 +19,6 @@ public class MessageFormat {
     private String message;
     private String jsonFormat;
     //private String color;
-    //TODO: maybe include rank name for the messageArea on client.
     public MessageFormat(RequestType type, Rank rank, String sender, String message, String color) {
         this.type = type;
         this.rank = rank;

@@ -53,14 +53,13 @@ public class ConnectionHandle implements Runnable {
     public void run() {
         String receivingMessage;
         try {
-            //TODO: need to add usernames to usernames.txt
             while((receivingMessage = bufferedReader.readLine()) != null) {
                 console.appendConsole(receivingMessage);
                 Gson gson = new Gson();
                 if (receivingMessage.startsWith("{\"type\":\"SEND_MESSAGE")) {
                     MessageFormat messageFormat = gson.fromJson(receivingMessage, MessageFormat.class);
                     User sender = UserManager.getInstance().getUser(messageFormat.getSender());
-                    if(sender != null && sender.isAuthoized()) {
+                    if(sender != null && sender.isAuthorized()) {
                         sendToAll(messageFormat.getSender(), messageFormat.getMessage(), sender.getColoredName());
                     }
                 } else if(receivingMessage.startsWith("{\"type\":\"LOGIN")) {
@@ -136,7 +135,6 @@ public class ConnectionHandle implements Runnable {
                                     ErrorFormat errorFormat = new ErrorFormat(RequestType.ERROR, "There is already an account with that email.");
                                     printWriter.println(errorFormat.getJsonFormat());
                                     printWriter.flush();
-                                    //TODO: I'd assume this would have to "flush" and "close".
                                 } else {
                                     console.appendConsole("clientSocket.getOutputStream == null");
                                 }
