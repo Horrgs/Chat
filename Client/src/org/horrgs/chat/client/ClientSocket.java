@@ -28,6 +28,9 @@ public class ClientSocket implements Runnable {
     private JFrame jFrame;
     public MessageWindow messageWindow;
     private String mostRecentOutgoingMessage;
+    private static ClientSocket instance = new ClientSocket();
+    public static ClientSocket getInstance() { return instance; }
+    public User user = new User();
 
     public void setMessageWindow(MessageWindow messageWindow) {
         this.messageWindow = messageWindow;
@@ -78,7 +81,6 @@ public class ClientSocket implements Runnable {
                 } else if(incomingMessage.startsWith("{\"type\":\"SUCCESSION")) {
                     Succession succession = gson.fromJson(incomingMessage, Succession.class);
                     jFrame.setVisible(false);
-                    User user = new User();
                     user.setRank(succession.getRank());
                     if(succession.getSuccession() == RequestType.LOGIN) {
                         LoginFormat loginFormat = gson.fromJson(getMostRecentOutgoingMessage(), LoginFormat.class);

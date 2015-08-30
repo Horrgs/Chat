@@ -21,13 +21,14 @@ import java.util.concurrent.TimeUnit;
  * Created by Horrgs on 7/1/2015.
  */
 public class MessageWindow /*implements Runnable */ {
+    //TODO: transition to this: http://imgur.com/ZZG84mN
     private JFrame jFrame = new JFrame();
     private JButton sendMessage;
     public JTextArea composeMessage;
     public JTextPane messageArea;
     public JScrollPane scrollPane;
     public PrintWriter printWriter;
-    public User user;
+    public User user = ClientSocket.getInstance().user;
 
     public static Color hex2Rgb(String colorStr) {
         return new Color(
@@ -58,13 +59,13 @@ public class MessageWindow /*implements Runnable */ {
         Rest
          */
         StyleConstants.setForeground(rest, Color.BLACK);
-
         try {
-            styledDocument.insertString(styledDocument.getLength(), "[", brackets);
-            styledDocument.insertString(styledDocument.getLength(), messageFormat.getRank().getName(), rank);
-            styledDocument.insertString(styledDocument.getLength(), "] ", brackets);
-            styledDocument.insertString(styledDocument.getLength(), messageFormat.getSender(), sender);
-            styledDocument.insertString(styledDocument.getLength(), ": " + messageFormat.getMessage() + "\n", rest);
+            int i = styledDocument.getLength();
+            styledDocument.insertString(i, "[", brackets);
+            styledDocument.insertString(i + 1, user.getRank().getName(), rank);
+            styledDocument.insertString(i + user.getRank().getName().length() + 1, "] ", brackets);
+            styledDocument.insertString(i + user.getRank().getName().length() + 2, " " + messageFormat.getSender(), sender);
+            styledDocument.insertString(i + 1 + messageFormat.getSender().length() + user.getRank().getName().length() + 2, ": " + messageFormat.getMessage() + "\n", rest);
         } catch (BadLocationException ex) {
             ex.printStackTrace();
         }
@@ -140,9 +141,8 @@ public class MessageWindow /*implements Runnable */ {
         @Override
         public void actionPerformed(ActionEvent ev) {
             if (ev.getSource() == sendMessage) {
-                System.out.println(user.getRank());
                 /*if (getSeconds() != 0 && user.getRank() != Rank.ADMINISTRATOR) {   */
-                if (composeMessage.getText().length() >= 10) {
+                if (user.getRank() == Rank.ADMINISTRATOR || composeMessage.getText().length() >= 10) {
                     MessageFormat messageFormat = new MessageFormat(RequestType.SEND_MESSAGE, Rank.USER, user.getUsername(), composeMessage.getText(), "null");
                     printWriter.println(messageFormat.getJsonFormat());
                     composeMessage.setText("");
@@ -153,6 +153,7 @@ public class MessageWindow /*implements Runnable */ {
                     //ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
                     //scheduledExecutorService.scheduleAtFixedRate(new MessageWindow(), 0, 1, TimeUnit.SECONDS);
                 } else {
+                    System.out.println(user.getRank().getName());
                     new Error("Message is too short, must be a total of 10 characters. You have " + composeMessage.getText().length() + ".", new Dimension(400, 400));
                 }
             } else {
