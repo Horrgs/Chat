@@ -2,6 +2,8 @@ package org.horrgs.chat.server.usertypes;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import org.horrgs.chat.server.Chat;
+import org.horrgs.chat.server.UsernameParser;
 import org.horrgs.chat.server.types.incoming.CreateAccountFormat;
 
 import java.io.*;
@@ -41,7 +43,7 @@ public class UserManager implements User {
         if(existsAlready) {
             setUsername(jsonObject.get(email).getAsJsonObject().get("username").getAsString());
             setPassword(jsonObject.get(email).getAsJsonObject().get("password").getAsString());
-            setAuthoized(true);
+            setAuthorized(true);
             setMostRecentMessage(jsonObject.get(email).getAsJsonObject().get("most_recent_message").getAsString());
             Status status = Status.OFFLINE;
             status = status.getById(jsonObject.get(email).getAsJsonObject().get("status").getAsString());
@@ -87,7 +89,7 @@ public class UserManager implements User {
     }
 
     @Override
-    public boolean isAuthoized() {
+    public boolean isAuthorized() {
         return authoized;
     }
 
@@ -133,7 +135,7 @@ public class UserManager implements User {
 
 
     @Override
-    public void setAuthoized(boolean authoized) {
+    public void setAuthorized(boolean authoized) {
         this.authoized = authoized;
     }
 
@@ -175,12 +177,13 @@ public class UserManager implements User {
         }
         setRank(Rank.USER);
         setMostRecentMessage("");
-        setAuthoized(true);
+        setAuthorized(true);
         setStatus(Status.ONLINE);
         setPassword(createAccountFormat.getPassword());
         setUsername(createAccountFormat.getUsername());
         setEmail(createAccountFormat.getEmail());
         UserManager.getInstance().getUsersOnline().add(this);
+        new UsernameParser().addUsername(createAccountFormat.getUsername());
     }
 
     public List<User> usersOnline = new ArrayList<>();
@@ -204,7 +207,33 @@ public class UserManager implements User {
     }
 
     public User getOfflineUser(String email) {
-        //TODO: parse json.
+        JsonObject jsonObject = new JsonObject();
+        JsonParser jsonParser = new JsonParser();
+        try {
+            Object obj = jsonParser.parse(new FileReader("users.json"));
+            jsonObject = (JsonObject) obj;
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        if(jsonObject.has(email)) {
+            JsonObject jsonEmail = jsonObject.get(email).getAsJsonObject();
+            User user = new UserManager();
+            user.setEmail(jsonEmail.get("email").getAsString());
+            user.setUsername(jsonEmail.get("username").getAsString());
+            user.setPassword(jsonEmail.get("password").getAsString());
+            user.setMostRecentMessage(jsonEmail.get("most_recent_message").getAsString());
+            Status status = Status.OFFLINE;
+            user.setStatus(status.getById(jsonEmail.get("status").getAsString()));
+            Rank rank = Rank.USER;
+            user.setRank(rank.getByName(jsonEmail.get("rank").getAsString()));
+            user.setColoredName(Chat.rankColors.get(rank));
+            user.setAuthorized(false);
+            return user;
+        }
         return null;
+    }
+
+    public User getOfflineUser(User user) {
+        return getOfflineUser(user.getUsername());
     }
 }
