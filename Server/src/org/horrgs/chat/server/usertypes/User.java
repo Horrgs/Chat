@@ -5,9 +5,9 @@ package org.horrgs.chat.server.usertypes;
  */
 public interface User {
 
-    public String getUsername();
+    public String getUsername();     //
 
-    public Rank getRank();
+    public Rank getRank();         //
 
     public Status getStatus();
 
@@ -15,15 +15,15 @@ public interface User {
 
     public String getPassword();
 
-    public boolean isAuthoized();
+    public boolean isAuthorized();      //
 
-    public String getEmail();
+    public String getEmail();            //
 
-    public String getColoredName();
+    public String getColoredName();        //
 
-    public void setUsername(String string);
+    public void setUsername(String string);  //
 
-    public void setRank(Rank rank);
+    public void setRank(Rank rank);            //
 
     public void setStatus(Status status);
 
@@ -31,11 +31,11 @@ public interface User {
 
     public void setMostRecentMessage(String message);
 
-    public void sendMessage(String message);
+    public void sendMessage(String message);            //
 
-    public void setAuthoized(boolean authorized);
+    public void setAuthorized(boolean authorized); //
 
-    public void setEmail(String email);
+    public void setEmail(String email);             //
 
-    public void setColoredName(String color);
+    public void setColoredName(String color);         //
 }
