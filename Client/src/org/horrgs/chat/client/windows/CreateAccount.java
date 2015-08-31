@@ -8,6 +8,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by Horrgs on 5/15/2015.
@@ -125,4 +127,14 @@ public class CreateAccount extends JFrame {
             }
         }
     }
+
+    private static boolean isValidEmail (String emailStr) {
+
+        String emailPattern =
+                "^\\w{1,}@[a-zA-Z]{1,}\\.[a-zA-Z]{1,}$";
+
+        Matcher m = Pattern.compile(emailPattern).matcher(emailStr);
+        return m.matches();
+    }
+
 }
