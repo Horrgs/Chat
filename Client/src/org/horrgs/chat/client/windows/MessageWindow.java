@@ -61,11 +61,11 @@ public class MessageWindow /*implements Runnable */ {
         StyleConstants.setForeground(rest, Color.BLACK);
         try {
             int i = styledDocument.getLength();
-            styledDocument.insertString(i, "[", brackets);
-            styledDocument.insertString(i + 1, user.getRank().getName(), rank);
-            styledDocument.insertString(i + user.getRank().getName().length() + 1, "] ", brackets);
-            styledDocument.insertString(i + user.getRank().getName().length() + 2, " " + messageFormat.getSender(), sender);
-            styledDocument.insertString(i + 1 + messageFormat.getSender().length() + user.getRank().getName().length() + 2, ": " + messageFormat.getMessage() + "\n", rest);
+            styledDocument.insertString(i, " [", brackets);
+            styledDocument.insertString(i + 2, user.getRank().getName(), rank);
+            styledDocument.insertString(i + user.getRank().getName().length() + 2, "] ", brackets);
+            styledDocument.insertString(i + user.getRank().getName().length() + 4, messageFormat.getSender(), sender);
+            styledDocument.insertString(i + 1 + messageFormat.getSender().length() + user.getRank().getName().length() + 3, ": " + messageFormat.getMessage() + "\n", rest);
         } catch (BadLocationException ex) {
             ex.printStackTrace();
         }
@@ -108,7 +108,6 @@ public class MessageWindow /*implements Runnable */ {
         composeMessage = new JTextArea(1, 50);
         composeMessage.setLineWrap(true);
         composeMessage.setWrapStyleWord(true);
-        //TODO: scroll for composeMessage for long messages.
         composeMessage.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         gbc.insets = new Insets(0, 10, 10, 10);
         jFrame.add(composeMessage, gbc);
