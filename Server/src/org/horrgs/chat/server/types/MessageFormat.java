@@ -24,7 +24,6 @@ public class MessageFormat {
         this.rank = rank;
         this.sender = sender;
         this.message = message;
-        //TODO: add rank to jsonFormat.
         this.jsonFormat = "{\"type\":\"" + type.getName() + "\",\"sender\":\"" + sender + "\",\"message\":\""+message+"\",\"color\":\"" + color + "\"}";
     }
 
